@@ -1,0 +1,16 @@
+The task is to build a simulation model for P identical preparation rooms, one operating theater and R recovery rooms and a flow of patients based on the first assignment. For future needs we foresee different types of patients. Hence each patient should be carrying its personal service times for the three phases with itself (but we will restrict ourselves to one patient flow at this stage, at least in the baseline scenario).
+
+Select a suitable simulation environment (like JavaSim, SimPy, OES or JaamSim) to work with. (The instructions/hints will work at least for JavaSim and SimPy that are process oriented. For others bit more experimentation and adaptation may be needed.)
+
+ Taking the simple client-server example as a basis, at least the following changes should be made:
+
+to modify the client generator so that if creates clients that know their service times for various phases and can communicate it to the corresponding service
+instead of one server there should be a sequence of service pools (finite number of identical service units for one phase that serve the same queue and send the clients to same exit (sharing common bottleneck in downstream) without any intermediate buffers. Depending on the modeling approach you may
+create pools of processes (see ProcessQueue class in samples of lecture 3)
+use pools of passive resources(or semaphores if available in the environment)
+Create/modify the needed monitoring and data collection
+Foresee to monitor average length of the queue at entrance and utilization of the operating theatre
+You can try to do this with exact monitoring which may become tedious, or by creating a Monitoring process that gives an approximation (a SimulationProcess Monitor that runs in eternal loop and takes snapshot values of desired variables from selected processes at regular instances and has methods for communicating needed reports (like averages between reporting requests)).
+In addition, you may have to add some other features depending on the individual twist to the problem.
+
+When testing the models, use exponential distribution for interarrival times and service times. For example, interarrival time for patients 25, 3 preparation units with average preparation time 40, operation time 20, 3 recovery units with recovery time 40. However, foresee that in the future also other cases will be simulated (different setups, different parameters, different distributions.
