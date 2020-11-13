@@ -22,8 +22,9 @@ class Hospital:
         self.preparation = simpy.Resource(env, N_PREPARATION_ROOMS)
         self.operation_room = simpy.Resource(env, 1)
         self.recovery = simpy.Resource(env, N_RECOVERY_ROOMS)
-        self.operation_room_busy = False
-        self.operation_finished = True
+        self.time_operation_theatre_blocked = 0
+        self.total_queue_at_entrance = 0
+        self.total_time_operating = 0
         self.process = self.env.process(self.run())
     
     def run(self):

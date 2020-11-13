@@ -17,3 +17,6 @@ env.run(until=SIM_TIME)
 
 print("Patients came: %7.0f" % (len(hospital.patients)))
 print("Patients got treated: %7.0f" % (len(hospital.patients_finished)))
+print("Average time operation theatre was blocked: %7.3f" % (hospital.time_operation_theatre_blocked / len(hospital.patients_finished)))
+print("Average queue at entrance: %7.3f" % (hospital.total_queue_at_entrance / len(hospital.patients)))
+print("Utilization rate of operation theatre: %7.3f" % (hospital.total_time_operating / SIM_TIME))
