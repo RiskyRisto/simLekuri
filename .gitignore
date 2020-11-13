@@ -1,0 +1,4 @@
+Hospital_python/__pycache__/
+*.egg-info/
+*.egg 
+.vscode/settings.json
