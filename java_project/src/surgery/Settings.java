@@ -16,6 +16,7 @@ public final class Settings {
 	
 	public static final int SIMULATION_TIME = 60 * 24 * 12;
 	
+	public static final double CANCELLATION_PROBABILITY = 0.05;
 	private Settings() {}
 	
 }

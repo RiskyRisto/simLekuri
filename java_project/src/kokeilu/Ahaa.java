@@ -1,11 +1,11 @@
 package kokeilu;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Queue;
+
+import org.javasim.streams.Draw;
 
 
 public class Ahaa {
@@ -44,11 +44,17 @@ public class Ahaa {
 		}).forEach(System.out::println);
 		
 		
-		try (var f = Files.newBufferedWriter(Paths.get("taulukko.txt"))) {
-			String s = Arrays.stream(t).map(e -> {
-				return Arrays.toString(e);
-			}).reduce((s1,s2) -> s1+ "\n" + s2).get();
-			f.write(s);
+//		try (var f = Files.newBufferedWriter(Paths.get("taulukko.txt"))) {
+//			String s = Arrays.stream(t).map(e -> {
+//				return Arrays.toString(e);
+//			}).reduce((s1,s2) -> s1+ "\n" + s2).get();
+//			f.write(s);
+//		}
+		
+		Draw draw = new Draw(0.95);
+		
+		for (int i = 0; i < 10; i++) {
+			System.out.println(draw.getBoolean());
 		}
 	}
 }

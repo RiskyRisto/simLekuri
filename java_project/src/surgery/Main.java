@@ -14,6 +14,9 @@ public class Main {
 
 		System.out.println("departed in total " + Surgery.nDeparted);
 		
+		long cancelledOperations = Surgery.operationsCancelled;
+		System.out.println("Number of operations cancelled " + cancelledOperations);
+		
 		//Average throughput time
 		double mtt = Surgery.tTotal / Surgery.nDeparted;
 		System.out.println("Average throughput time " + mtt);
@@ -22,14 +25,13 @@ public class Main {
 		double mbt = Surgery.tRecoveryWaiting / Surgery.nWaited;
 		System.out.println("Average blocking time for recovery " + mbt);
 
-		//average length of the queue at entrance (at any minute)
-		//TODO: ?
-		double mqlae = 0;
+		//average length of the queue at entrance 
+		double mqlae = Surgery.nQeueued / Surgery.nTotal;
 		System.out.println("Average length of the queue at entrance " + mqlae);
 
 		//utilization of the operation theatre
 		double ur = Surgery.tBusy / Settings.SIMULATION_TIME;
-		System.out.println("Utilization of the operation theatre " + ur);
+		System.out.println("Utilization rate of the operation theatre " + ur);
 		
 		System.exit(0);
 	}

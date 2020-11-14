@@ -7,6 +7,8 @@ import org.javasim.SimulationException;
 
 /*
  * simulate surgery
+ * extends from simulationentity in order to be able to 
+ * manipulate semaphores
  */
 public class Patient extends SimulationEntity {
 	private double PreparationserviceTime;
@@ -19,11 +21,20 @@ public class Patient extends SimulationEntity {
 	private double tStartedWaiting;
 	private double tEndWaiting;
 	
-	public Patient(double preparationserviceTime, double operationServiceTime, double recoveryServiceTime) {
-		PreparationserviceTime = preparationserviceTime;
+	private boolean cancelOperation;
+	
+	public Patient(double preparationserviceTime, double operationServiceTime, double recoveryServiceTime, boolean cancelOperation) {
+		this.PreparationserviceTime = preparationserviceTime;
 		this.operationServiceTime = operationServiceTime;
 		this.recoveryServiceTime = recoveryServiceTime;
-		
+		this.cancelOperation = cancelOperation;
+	}
+	
+
+	/*
+	 * activates patient
+	 */
+	public void startPatient() {
 		try {
 			this.activate();
 		} catch (SimulationException | RestartException e) {
@@ -36,31 +47,51 @@ public class Patient extends SimulationEntity {
 	 * Preparation -> Surgery -> Recovery
 	 */
 	public void run() {
+		//record time patient arrives
 		this.arrivalTime = Scheduler.currentTime();
 
+		//add to total the number of patients currently waiting to get to preparation
+		Surgery.nQeueued += Surgery.preparationQueue.numberWaiting();
+		Surgery.nTotal++;
+		
 		//release locks after getting  to next stage
 		try {
+			//queue to preparation facility
 			Surgery.preparationQueue.get(this);
-			hold(PreparationserviceTime);
-			
+			//spend time in preparation
+			hold(this.PreparationserviceTime);
+			//check for cancellation
+			if (this.cancelOperation) {
+				Surgery.operationsCancelled++;
+				Surgery.preparationQueue.release();
+				terminate();
+				return;
+			}
+			//queue to operation
 			Surgery.operationQueue.get(this);
-			hold(operationServiceTime);
-		
+			//release one space from preparation
 			Surgery.preparationQueue.release();
-			
-			tStartedWaiting = Scheduler.currentTime();
-			Surgery.recoveryQueue.get(this);			
+			//spend time in operation
+			hold(operationServiceTime);
+			//record time when started waiting to get to recovery
+			this.tStartedWaiting = Scheduler.currentTime();
+			//queue to recovery
+			Surgery.recoveryQueue.get(this);
+			//release one space from operation
 			Surgery.operationQueue.release();
-			
-			tEndWaiting = Scheduler.currentTime();
+			//record time when ended waiting to get to recovery
+			this.tEndWaiting = Scheduler.currentTime();
+			//record number of patients that have waited to get to recovery
 			Surgery.nWaited++;
-			
+			//spend time in recovery
 			hold(recoveryServiceTime);
-			
+			//release one space from recovery
 			Surgery.recoveryQueue.release();
-
-			departureTime = Scheduler.currentTime();
+			//record the time patient deprated
+			this.departureTime = Scheduler.currentTime();
+			//save stats
 			finished();
+			//remove the patient from the scheduler queue
 			terminate();
 			
 			
@@ -69,6 +100,7 @@ public class Patient extends SimulationEntity {
 		}
 		
 	}
+	
 	
 	/*
 	 * update statistics in surgery 
