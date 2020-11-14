@@ -11,6 +11,9 @@ TIES481 Simulation assignment
 
 ## How to run
 ### Java version
+0. Get java
+https://www.oracle.com/java/technologies/javase-jdk15-downloads.html
+
 1. clone the repo\
 `git clone https://github.com/RiskyRisto/simLekuri.git`
 
@@ -23,10 +26,13 @@ If you are on mac you have to probably replace the ; with :\
 `javac -cp ".;path/to/javasim-2.3.jar" -d bin src/surgery/*`
 
 4. running the code \
-`cd bin\`
+`cd bin` \
 `java -cp ".;path/to/javasim-2.3.jar" surgery.Main`
 
 ### Python version
+0. get python
+https://www.python.org/downloads/
+
 1. clone the repo \
 `git clone https://github.com/RiskyRisto/simLekuri.git`
 
