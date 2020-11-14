@@ -7,11 +7,14 @@ import org.javasim.SimulationException;
 import org.javasim.SimulationProcess;
 import org.javasim.streams.ExponentialStream;
 
+/*
+ * generate patients
+ */
 public class Arrivals extends SimulationProcess {
-	private ExponentialStream interarrivalTime = new ExponentialStream(25);
-	private ExponentialStream preparationTime = new ExponentialStream(40);
-	private ExponentialStream operationTime = new ExponentialStream(20);
-	private ExponentialStream recoveryTime = new ExponentialStream(40);
+	private ExponentialStream interarrivalTime = new ExponentialStream(Settings.MEAN_INTERARRIVAL_TIME);
+	private ExponentialStream preparationTime = new ExponentialStream(Settings.MEAN_PREPARATION_TIME);
+	private ExponentialStream operationTime = new ExponentialStream(Settings.MEAN_OPERATION_TIME);
+	private ExponentialStream recoveryTime = new ExponentialStream(Settings.MEAN_RECOVERY_TIME);
 	
 	public void run() {
 		while (true) {

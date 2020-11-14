@@ -5,6 +5,9 @@ import org.javasim.Scheduler;
 import org.javasim.SimulationEntity;
 import org.javasim.SimulationException;
 
+/*
+ * simulate surgery
+ */
 public class Patient extends SimulationEntity {
 	private double PreparationserviceTime;
 	private double operationServiceTime;
@@ -24,29 +27,36 @@ public class Patient extends SimulationEntity {
 		try {
 			this.activate();
 		} catch (SimulationException | RestartException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
+	/*
+	 * Simulate patient going through the system
+	 * Preparation -> Surgery -> Recovery
+	 */
 	public void run() {
 		this.arrivalTime = Scheduler.currentTime();
-	
+
+		//release locks after getting  to next stage
 		try {
 			Surgery.preparationQueue.get(this);
 			hold(PreparationserviceTime);
-			Surgery.preparationQueue.release();
 			
 			Surgery.operationQueue.get(this);
 			hold(operationServiceTime);
-			Surgery.operationQueue.release();
+		
+			Surgery.preparationQueue.release();
 			
 			tStartedWaiting = Scheduler.currentTime();
 			Surgery.recoveryQueue.get(this);			
+			Surgery.operationQueue.release();
+			
 			tEndWaiting = Scheduler.currentTime();
 			Surgery.nWaited++;
 			
 			hold(recoveryServiceTime);
+			
 			Surgery.recoveryQueue.release();
 
 			departureTime = Scheduler.currentTime();
@@ -55,12 +65,14 @@ public class Patient extends SimulationEntity {
 			
 			
 		} catch (RestartException | SimulationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 	}
 	
+	/*
+	 * update statistics in surgery 
+	 */
 	public void finished() {
 		double time = departureTime - arrivalTime;
 		double waitingTime = tEndWaiting - tStartedWaiting;
@@ -69,6 +81,7 @@ public class Patient extends SimulationEntity {
 		Surgery.tRecoveryWaiting += waitingTime;
 		Surgery.tTotal += time;
 		
+		Surgery.tBusy += this.operationServiceTime;
 	}
 	
 }

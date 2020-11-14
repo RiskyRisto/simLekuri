@@ -6,22 +6,36 @@ import org.javasim.Simulation;
 import org.javasim.SimulationException;
 import org.javasim.SimulationProcess;
 
+/**
+ * Container for state of simulation
+ * @author Juha Reinikainen
+ *
+ */
 public class Surgery extends SimulationProcess {
 
 	public static Semaphore preparationQueue;
 	public static Semaphore operationQueue;
 	public static Semaphore recoveryQueue;
 	
+	//number of patients who have departed
 	public static int nDeparted;
+	//total time patients have spent in the system (arrival-departure)
 	public static double tTotal;
+	
+	//number of patients that have waited to get to recovery
 	public static int nWaited;
+	//total time patients have waited to get to recovery
 	public static double tRecoveryWaiting;
-
+	
+	//total time operation room has been busy
+	public static double tBusy;
+	
 	public Surgery() {
-		preparationQueue = new Semaphore(3);
-		operationQueue = new Semaphore();
-		recoveryQueue = new Semaphore(3);
+		preparationQueue = new Semaphore(Settings.N_PREPARATION_ROOMS);
+		operationQueue = new Semaphore(Settings.N_OPERATION_ROOMS);
+		recoveryQueue = new Semaphore(Settings.N_RECOVERY_ROOMS);
 	}
+	
 	
 	public void run() {
 		Arrivals arrivals = new Arrivals();
@@ -31,20 +45,14 @@ public class Surgery extends SimulationProcess {
 			
 			Simulation.start();
 			
-			hold(3000);
-			
-			System.out.println(nDeparted);
-			System.out.println("average throughput time: " + (tTotal / nDeparted));
-			System.out.println("average blocking time in recovery: " + (tRecoveryWaiting / nWaited));
+			hold(Settings.SIMULATION_TIME);			
 			
 			Simulation.stop();
 		
 			mainResume();
 		} catch (SimulationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (RestartException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
