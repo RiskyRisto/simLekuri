@@ -1,19 +1,23 @@
-# Process based approachvsimulation model
+# Process based approach simulation model
 - Object/parameters names in python version in parethesis
 
-## Arrivals: generate new patients
-## Patient
+## Active processes: Patient and Hospital
+##### Hospital
+- Generate new patients
+- Generate services/resources
+- Keep track of the statistics
+### Patient
 - Time when patient enters system tStart (self.start_time)
 - Time when patient exits system tEnd (self.end_time)
 - Time when patient starts to wait to get to recovery tStartedWaiting (self.time_operation_done)
 - Time when patient stops waiting to get to recovery tEndWaiting (self.time_recovery_start)
-## Preparation service (queue)
-## Operation service (queue with one slot)
-## Recovery service (queue)
-## Reporter (statistics)
+## Services / Resources: 
+### Preparation service (queue)
+### Operation service (queue with one slot)
+### Recovery service (queue)
 - decide which components will be active processes (with own life cycles)
-## Patient
-- sketch the life-cycles (ordered (conditional) sequence of actions that change the system variables or manipulate other life-cycles
+## Life-cycles (ordered (conditional) sequence of actions that change the system variables or manipulate other life-cycles
+### Patient 
 - arrivals
 - create new patient 
 - tStart = now()
