@@ -16,7 +16,6 @@ class Hospital:
     
     def __init__(self, env):
         self.env = env
-        self.action = env.process(self.run())
         self.patients = []
         self.patients_finished = []
         self.preparation = simpy.Resource(env, N_PREPARATION_ROOMS)
