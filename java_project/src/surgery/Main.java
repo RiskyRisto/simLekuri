@@ -12,6 +12,8 @@ public class Main {
 		
 		surgery.await();
 
+		System.out.println("Simulating operation of surgery facilities for " + Settings.WEEKS + " weeks");
+		
 		System.out.println("departed in total " + Surgery.nDeparted);
 		
 		long cancelledOperations = Surgery.operationsCancelled;
