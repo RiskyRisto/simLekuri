@@ -3,8 +3,8 @@
 
 ## Active processes: Patient and Hospital
 ##### Hospital
-- Generate new patients
 - Generate services/resources
+- Generate new patients
 - Keep track of the statistics
 ### Patient
 - Time when patient enters system tStart (self.start_time)
