@@ -1,11 +1,12 @@
-# Process based approach
+# Process based approachvsimulation model
+- Object/parameters names in python version in parethesis
 
 ## Arrivals: generate new patients
 ## Patient
-- Time when patient enters system tStart
-- Time when patient exits system tEnd
-- Time when patient starts to wait to get to recovery tStartedWaiting
-- Time when patient stops waiting to get to recovery tEndWaiting
+- Time when patient enters system tStart (self.start_time)
+- Time when patient exits system tEnd (self.end_time)
+- Time when patient starts to wait to get to recovery tStartedWaiting (self.time_operation_done)
+- Time when patient stops waiting to get to recovery tEndWaiting (self.time_recovery_start)
 ## Preparation service (queue)
 ## Operation service (queue with one slot)
 ## Recovery service (queue)
@@ -22,7 +23,7 @@
 - Recovery service
 - tEndWaiting = now()
 - tEnd = now() + timeInRecovery
-#Additional feature
+## Additional feature
 - During the preparation, some new information is found and the surgery needs to be cancelled
-cancelling probability needed
-skip the operation and recovery phases
+- cancelling probability needed (self.operation_cancelled)
+- skip the operation and recovery phases
