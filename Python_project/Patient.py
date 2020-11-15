@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Nov 10 12:59:58 2020
-
 @author: Mika Sipilä
 """
 
@@ -28,38 +27,32 @@ class Patient():
         self.process = env.process(self.preparation())
         
     def preparation(self):
-        preparation_request = self.hospital.preparation.request()
+        preparation_request = self.hospital.preparation.request() # start queing if there is no free preparation available
         yield preparation_request
-        if self.operation_cancelled:
+        if self.operation_cancelled: # with probability of CANCELLING_PROBABILITY operation is cancelled during preparation
             yield self.env.timeout(self.operation_cancelled_time)
             self.hospital.preparation.release(preparation_request)
         else:
-            self.hospital.total_queue_at_entrance += len(self.hospital.preparation.queue)
+            self.hospital.total_queue_at_entrance += len(self.hospital.preparation.queue) # for calculating average queue at entrance
             yield self.env.timeout(self.preparation_time)
-            self.process = self.env.process(self.operation(preparation_request))
+            self.process = self.env.process(self.operation(preparation_request)) # free the preparation room
     
     def operation(self, preparation_request):
-        operation_request = self.hospital.operation_room.request()
+        operation_request = self.hospital.operation_room.request() # start queing if the operation theatre is not free
         yield operation_request
-        self.hospital.preparation.release(preparation_request)
+        self.hospital.preparation.release(preparation_request) # free the preparation room
         yield self.env.timeout(self.operation_time)
-        self.hospital.total_time_operating += self.operation_time
+        self.hospital.total_time_operating += self.operation_time # for calculation utilization rate
         self.time_operation_done = self.env.now
-        self.process = self.env.process(self.recovery(operation_request))
+        self.process = self.env.process(self.recovery(operation_request)) # start queing if there is no space in recovery
         
     def recovery(self, operation_request):
         with self.hospital.recovery.request() as recovery_request:
             yield recovery_request
-            self.hospital.operation_room.release(operation_request)
+            self.hospital.operation_room.release(operation_request) # free the operation theatre
             self.time_recovery_start = self.env.now
             yield self.env.timeout(self.recovery_time)
         self.end_time = self.env.now
         self.hospital.patients_finished.append(self)
-        self.hospital.time_operation_theatre_blocked += (self.time_recovery_start - self.time_operation_done)
+        self.hospital.time_operation_theatre_blocked += (self.time_recovery_start - self.time_operation_done) # for calculating average blocked time
         print("Time spent in process: %6.3f" % (self.end_time - self.start_time))
-        
-        
-        
-        
-            
-        
