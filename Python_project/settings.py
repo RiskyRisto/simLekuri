@@ -21,5 +21,6 @@ RECOVERY_BETA = 1/6.0
 MEAN_NEW_PATIENT = 50.0
 NEW_PATIENT_LAMBDA = 1 / MEAN_NEW_PATIENT  # Param. for expovariate distribution
 SEVERE_PATIENT_PROBABILITY = 0.3
+CANCELLING_PROBABILITY = 0.05
 WEEKS = 12             # Simulation time in weeks
 SIM_TIME = WEEKS * 7 * 24 * 60  # Simulation time in minutes

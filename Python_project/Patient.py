@@ -16,9 +16,11 @@ class Patient():
         self.hospital = hospital
         self.env = env
         self.preparation_time = random.expovariate(PREPARATION_LAMBDA) #random.gammavariate(PREPARATION_ALPHA, PREPARATION_BETA)
-        self.severe = bool_with_probability(SEVERE_PATIENT_PROBABILITY)
         self.operation_time = random.expovariate(OPERATION_LAMBDA) #random.gammavariate(OPERATION_ALPHA, OPERATION_BETA)
         self.recovery_time = random.expovariate(RECOVERY_LAMBDA) #random.gammavariate(RECOVERY_ALPHA, RECOVERY_BETA)
+        self.severe = bool_with_probability(SEVERE_PATIENT_PROBABILITY)
+        self.operation_cancelled = bool_with_probability(CANCELLING_PROBABILITY)
+        self.operation_cancelled_time = random.uniform(0, self.preparation_time) #Random time of preparation when new information is found and operation is cancelled
         self.start_time = self.env.now
         self.time_operation_done = None
         self.time_recovery_start = None
@@ -28,9 +30,13 @@ class Patient():
     def preparation(self):
         preparation_request = self.hospital.preparation.request()
         yield preparation_request
-        self.hospital.total_queue_at_entrance += len(self.hospital.preparation.queue)
-        yield self.env.timeout(self.preparation_time)
-        self.process = self.env.process(self.operation(preparation_request))
+        if self.operation_cancelled:
+            yield self.env.timeout(self.operation_cancelled_time)
+            self.hospital.preparation.release(preparation_request)
+        else:
+            self.hospital.total_queue_at_entrance += len(self.hospital.preparation.queue)
+            yield self.env.timeout(self.preparation_time)
+            self.process = self.env.process(self.operation(preparation_request))
     
     def operation(self, preparation_request):
         operation_request = self.hospital.operation_room.request()

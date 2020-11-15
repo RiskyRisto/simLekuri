@@ -9,6 +9,6 @@ import random
 
 def bool_with_probability(probability):
     random_prob = random.uniform(0,1)
-    if random_prob >= probability:
+    if random_prob <= probability:
         return True
     return False        
