@@ -1,0 +1,368 @@
+[
+    [
+        {
+            "mean_blocking_time": 0.06873822770716097,
+            "mean_queue_at_entrance": 0.35714285714285715,
+            "utilization_rate_of_operation_theatre": 0.6543789049096747,
+            "total_throughput_time": 4118.373206644768
+        },
+        {
+            "mean_blocking_time": 0.05899391033759374,
+            "mean_queue_at_entrance": 0.2564102564102564,
+            "utilization_rate_of_operation_theatre": 0.5966429763193895,
+            "total_throughput_time": 3723.2117716808903
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 1.1666666666666667,
+            "utilization_rate_of_operation_theatre": 0.7265891657433232,
+            "total_throughput_time": 5080.725416298239
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.5,
+            "utilization_rate_of_operation_theatre": 0.5430340757013219,
+            "total_throughput_time": 4367.308354197809
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.02857142857142857,
+            "utilization_rate_of_operation_theatre": 0.5252968653978788,
+            "total_throughput_time": 2794.8851498516065
+        },
+        {
+            "mean_blocking_time": 0.6465608744484779,
+            "mean_queue_at_entrance": 1.5333333333333334,
+            "utilization_rate_of_operation_theatre": 0.7241942628583478,
+            "total_throughput_time": 5924.954062223686
+        },
+        {
+            "mean_blocking_time": 0.9377740454096842,
+            "mean_queue_at_entrance": 1.411764705882353,
+            "utilization_rate_of_operation_theatre": 0.8300923042947501,
+            "total_throughput_time": 7284.004541256176
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.03225806451612903,
+            "utilization_rate_of_operation_theatre": 0.4103661232908835,
+            "total_throughput_time": 2538.8851735733506
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 1.4615384615384615,
+            "utilization_rate_of_operation_theatre": 0.6687845009750143,
+            "total_throughput_time": 6016.70387799053
+        },
+        {
+            "mean_blocking_time": 0.5106135604720592,
+            "mean_queue_at_entrance": 0.42857142857142855,
+            "utilization_rate_of_operation_theatre": 0.6285025497235301,
+            "total_throughput_time": 4265.56911140189
+        },
+        {
+            "mean_blocking_time": 1.8174951518439337,
+            "mean_queue_at_entrance": 1.2702702702702702,
+            "utilization_rate_of_operation_theatre": 0.6538081748921609,
+            "total_throughput_time": 4533.654984062667
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.5135135135135135,
+            "utilization_rate_of_operation_theatre": 0.5916154777595116,
+            "total_throughput_time": 3793.699165519335
+        },
+        {
+            "mean_blocking_time": 0.10743116025362416,
+            "mean_queue_at_entrance": 0.19047619047619047,
+            "utilization_rate_of_operation_theatre": 0.6249218154732328,
+            "total_throughput_time": 3592.856658068047
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.10344827586206896,
+            "utilization_rate_of_operation_theatre": 0.48684415175663326,
+            "total_throughput_time": 2929.614724321763
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.07894736842105263,
+            "utilization_rate_of_operation_theatre": 0.6523397895075633,
+            "total_throughput_time": 3624.85055870594
+        },
+        {
+            "mean_blocking_time": 0.5328218461229584,
+            "mean_queue_at_entrance": 4.020833333333333,
+            "utilization_rate_of_operation_theatre": 0.5188359604005355,
+            "total_throughput_time": 6878.151925678705
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 1.05,
+            "utilization_rate_of_operation_theatre": 0.672848213062528,
+            "total_throughput_time": 4265.661626896915
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.0,
+            "utilization_rate_of_operation_theatre": 0.5956811461615165,
+            "total_throughput_time": 3283.3111642978383
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.02564102564102564,
+            "utilization_rate_of_operation_theatre": 0.6271219733833691,
+            "total_throughput_time": 3822.121829374598
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.05128205128205128,
+            "utilization_rate_of_operation_theatre": 0.4314478998722356,
+            "total_throughput_time": 3709.5925421672014
+        }
+    ],
+    [
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.02631578947368421,
+            "utilization_rate_of_operation_theatre": 0.5387283600158969,
+            "total_throughput_time": 3244.2559935300837
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.0967741935483871,
+            "utilization_rate_of_operation_theatre": 0.46777714438074114,
+            "total_throughput_time": 2344.524278973201
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 1.7567567567567568,
+            "utilization_rate_of_operation_theatre": 0.6604586880062644,
+            "total_throughput_time": 5131.26314530854
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.5833333333333334,
+            "utilization_rate_of_operation_theatre": 0.5388294317119428,
+            "total_throughput_time": 3325.9274611438277
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.0975609756097561,
+            "utilization_rate_of_operation_theatre": 0.5578174215181166,
+            "total_throughput_time": 4156.255279391577
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.875,
+            "utilization_rate_of_operation_theatre": 0.6889927290770106,
+            "total_throughput_time": 4435.067919629615
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.8536585365853658,
+            "utilization_rate_of_operation_theatre": 0.6249182409621906,
+            "total_throughput_time": 3446.049466696717
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.7142857142857143,
+            "utilization_rate_of_operation_theatre": 0.6287625022100499,
+            "total_throughput_time": 4300.615893250426
+        },
+        {
+            "mean_blocking_time": 0.0047088967062504875,
+            "mean_queue_at_entrance": 0.0,
+            "utilization_rate_of_operation_theatre": 0.3297297909580909,
+            "total_throughput_time": 2936.982159219785
+        },
+        {
+            "mean_blocking_time": 0.05133130854657001,
+            "mean_queue_at_entrance": 0.5,
+            "utilization_rate_of_operation_theatre": 0.7134253680432098,
+            "total_throughput_time": 5061.089702662707
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.4878048780487805,
+            "utilization_rate_of_operation_theatre": 0.6127512040661055,
+            "total_throughput_time": 4848.640831395893
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 1.25,
+            "utilization_rate_of_operation_theatre": 0.6870140765399866,
+            "total_throughput_time": 5838.461977253663
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.13157894736842105,
+            "utilization_rate_of_operation_theatre": 0.5531293566519424,
+            "total_throughput_time": 2851.1410049546053
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.18181818181818182,
+            "utilization_rate_of_operation_theatre": 0.4082250176177758,
+            "total_throughput_time": 2511.9236968474374
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 2.4565217391304346,
+            "utilization_rate_of_operation_theatre": 0.7241531723098037,
+            "total_throughput_time": 6724.229306575143
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.0,
+            "utilization_rate_of_operation_theatre": 0.37336875579452716,
+            "total_throughput_time": 2170.661015114508
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.4473684210526316,
+            "utilization_rate_of_operation_theatre": 0.5884655928424962,
+            "total_throughput_time": 3655.1309950550067
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.08333333333333333,
+            "utilization_rate_of_operation_theatre": 0.5149260166355116,
+            "total_throughput_time": 3509.1530964397725
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 1.4186046511627908,
+            "utilization_rate_of_operation_theatre": 0.6618201069758459,
+            "total_throughput_time": 4792.370960654751
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.41025641025641024,
+            "utilization_rate_of_operation_theatre": 0.7171815776244341,
+            "total_throughput_time": 4111.699737348494
+        }
+    ],
+    [
+        {
+            "mean_blocking_time": 0.03759180157819131,
+            "mean_queue_at_entrance": 0.19047619047619047,
+            "utilization_rate_of_operation_theatre": 0.6413283315970819,
+            "total_throughput_time": 4317.662270031056
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 1.3170731707317074,
+            "utilization_rate_of_operation_theatre": 0.6732031131755745,
+            "total_throughput_time": 4897.652222468269
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.4594594594594595,
+            "utilization_rate_of_operation_theatre": 0.42400276590012187,
+            "total_throughput_time": 2512.8905649061717
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 2.425,
+            "utilization_rate_of_operation_theatre": 0.8420362368030463,
+            "total_throughput_time": 7123.767230777741
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 3.048780487804878,
+            "utilization_rate_of_operation_theatre": 0.6536926139864845,
+            "total_throughput_time": 5830.362498401434
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.4444444444444444,
+            "utilization_rate_of_operation_theatre": 0.7004256298405416,
+            "total_throughput_time": 5226.648873470242
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.78,
+            "utilization_rate_of_operation_theatre": 0.7517427434576746,
+            "total_throughput_time": 5457.829478059359
+        },
+        {
+            "mean_blocking_time": 0.39728842300025896,
+            "mean_queue_at_entrance": 0.5454545454545454,
+            "utilization_rate_of_operation_theatre": 0.7334685501718589,
+            "total_throughput_time": 4068.925207652535
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.5,
+            "utilization_rate_of_operation_theatre": 0.7606946267363184,
+            "total_throughput_time": 4333.902095928999
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.11627906976744186,
+            "utilization_rate_of_operation_theatre": 0.6659304198401932,
+            "total_throughput_time": 4330.277551451674
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.21621621621621623,
+            "utilization_rate_of_operation_theatre": 0.5218865623807519,
+            "total_throughput_time": 3632.7314969065383
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.02631578947368421,
+            "utilization_rate_of_operation_theatre": 0.689825652257695,
+            "total_throughput_time": 3831.326644053117
+        },
+        {
+            "mean_blocking_time": 0.20164918482510075,
+            "mean_queue_at_entrance": 2.75,
+            "utilization_rate_of_operation_theatre": 0.7799674226794666,
+            "total_throughput_time": 7005.418530644873
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.027777777777777776,
+            "utilization_rate_of_operation_theatre": 0.5684243657724223,
+            "total_throughput_time": 3814.6720284246994
+        },
+        {
+            "mean_blocking_time": 1.4789033243887142,
+            "mean_queue_at_entrance": 0.3225806451612903,
+            "utilization_rate_of_operation_theatre": 0.47804064347416536,
+            "total_throughput_time": 4154.383845809198
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.875,
+            "utilization_rate_of_operation_theatre": 0.8895267936013715,
+            "total_throughput_time": 6196.283357459364
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 1.2291666666666667,
+            "utilization_rate_of_operation_theatre": 0.8537317450191078,
+            "total_throughput_time": 5737.767898409319
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.1111111111111111,
+            "utilization_rate_of_operation_theatre": 0.5121386574810379,
+            "total_throughput_time": 3221.5460143843097
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.0,
+            "utilization_rate_of_operation_theatre": 0.475492957239193,
+            "total_throughput_time": 2598.250504101533
+        },
+        {
+            "mean_blocking_time": 0.0,
+            "mean_queue_at_entrance": 0.0,
+            "utilization_rate_of_operation_theatre": 0.34077154431405204,
+            "total_throughput_time": 2665.3989624656115
+        }
+    ]
+]

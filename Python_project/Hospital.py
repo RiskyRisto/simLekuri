@@ -6,21 +6,21 @@ Created on Tue Nov 10 12:32:41 2020
 """
 
 import random;
-from settings import *;
-from Patient import *;
-
-def time_to_next_patient():
-    return random.expovariate(NEW_PATIENT_LAMBDA)
+import settings
+from Patient import Patient;
+import simpy
 
 class Hospital:
     
-    def __init__(self, env):
+    def __init__(self, env, n_prep, n_rec):
         self.env = env
         self.patients = []
         #self.patients_finished = []
-        self.preparation = simpy.Resource(env, N_PREPARATION_ROOMS)
+        #self.preparation = simpy.Resource(env, N_PREPARATION_ROOMS)
+        self.preparation = simpy.Resource(env, n_prep)
         self.operation_room = simpy.Resource(env, 1)
-        self.recovery = simpy.Resource(env, N_RECOVERY_ROOMS)
+        #self.recovery = simpy.Resource(env, N_RECOVERY_ROOMS)
+        self.recovery = simpy.Resource(env, n_rec)
         self.time_operation_theatre_blocked = 0
         self.total_queue_at_entrance = 0
         self.total_time_operating = 0
@@ -28,7 +28,7 @@ class Hospital:
     
     def run(self):
         while True:
-            next_patient_time = random.expovariate(NEW_PATIENT_LAMBDA)
+            next_patient_time = random.expovariate(settings.NEW_PATIENT_LAMBDA)
             yield self.env.timeout(next_patient_time)
             self.generate_patient()
             
@@ -36,6 +36,3 @@ class Hospital:
         patient = Patient(self.env, self)
         self.patients.append(patient)
         
-            
-            
-            

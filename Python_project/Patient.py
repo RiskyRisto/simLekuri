@@ -5,9 +5,8 @@ Created on Tue Nov 10 12:59:58 2020
 """
 
 import random;
-import simpy;
-from settings import *;
-from helpers import *;
+import settings
+import helpers
 
 class Patient():
     
@@ -17,20 +16,21 @@ class Patient():
         #random.gammavariate(PREPARATION_ALPHA, PREPARATION_BETA)
         #random.gammavariate(OPERATION_ALPHA, OPERATION_BETA)
         #random.gammavariate(RECOVERY_ALPHA, RECOVERY_BETA)
-        self.preparation_time = random.expovariate(PREPARATION_LAMBDA) 
-        self.operation_time = random.expovariate(OPERATION_LAMBDA) 
-        self.recovery_time = random.expovariate(RECOVERY_LAMBDA) 
-        self.severe = bool_with_probability(SEVERE_PATIENT_PROBABILITY)
-        self.operation_cancelled = bool_with_probability(CANCELLING_PROBABILITY)
+        self.preparation_time = random.expovariate(settings.PREPARATION_LAMBDA) 
+        self.operation_time = random.expovariate(settings.OPERATION_LAMBDA) 
+        self.recovery_time = random.expovariate(settings.RECOVERY_LAMBDA) 
+        #TODO: use this
+        self.severe = helpers.bool_with_probability(settings.SEVERE_PATIENT_PROBABILITY)
+        self.operation_cancelled = helpers.bool_with_probability(settings.CANCELLING_PROBABILITY)
         #Random time of preparation when new information is found and operation is cancelled
         self.operation_cancelled_time = random.uniform(0, self.preparation_time) 
         self.start_time = self.env.now
         self.time_operation_done = None
         self.time_recovery_start = None
         self.end_time = None
+        self.finished = False
         self.process = env.process(self.preparation())
 
-        self.finished = False
         
     def preparation(self):
         # start queing if there is no free preparation available
@@ -74,3 +74,22 @@ class Patient():
         # for calculating average blocked time
         self.hospital.time_operation_theatre_blocked += (self.time_recovery_start - self.time_operation_done) 
         #print("Time spent in process: %6.3f" % (self.end_time - self.start_time))
+
+    def __str__(self):
+        """
+        Get string presentation of this object
+        """
+        return str(self.to_dict())
+
+    def to_dict(self):
+        """
+        Get dictionary presentation of this object
+        """
+        return {
+            "start_time": self.start_time,
+            "end_time": self.end_time,
+            "finished": self.finished,
+            "operation_cancelled": self.operation_cancelled,
+            "time_operation_done": self.time_operation_done,
+            "time_recovery_start": self.time_recovery_start
+        }
