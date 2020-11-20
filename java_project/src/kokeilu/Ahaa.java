@@ -19,6 +19,10 @@ public class Ahaa {
 		return x;
 	}
 	
+	protected double numero(double a) {
+		return a * Math.random();
+	}
+	
 	public static void main(String[] args) throws ArithmeticException, IOException {
 		Ahaa ahaa = new Ahaa();
 		System.out.println(ahaa.getX());

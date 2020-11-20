@@ -16,9 +16,9 @@ public class Arrivals extends SimulationProcess {
 	private ExponentialStream preparationTime = new ExponentialStream(Settings.MEAN_PREPARATION_TIME);
 	private ExponentialStream operationTime = new ExponentialStream(Settings.MEAN_OPERATION_TIME);
 	private ExponentialStream recoveryTime = new ExponentialStream(Settings.MEAN_RECOVERY_TIME);
-	
-	private Draw cancelOperation = new Draw(1  - Settings.CANCELLATION_PROBABILITY);
-	
+
+	private Draw cancelOperation = new Draw(1 - Settings.CANCELLATION_PROBABILITY);
+
 	public void run() {
 		while (true) {
 			try {
@@ -27,16 +27,16 @@ public class Arrivals extends SimulationProcess {
 				double ot = operationTime.getNumber();
 				double rt = recoveryTime.getNumber();
 				boolean cp = cancelOperation.getBoolean();
-				
+
 				Patient patient = new Patient(pt, ot, rt, cp);
 				patient.startPatient();
-				
+
 				hold(it);
-			} catch (RestartException | IOException | SimulationException e) {
+			} catch (SimulationException | RestartException | IOException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
 	}
-
+	
 }

@@ -14,22 +14,22 @@ public class Patient extends SimulationEntity {
 	private double PreparationserviceTime;
 	private double operationServiceTime;
 	private double recoveryServiceTime;
-	
+
 	private double arrivalTime;
 	private double departureTime;
-	
+
 	private double tStartedWaiting;
 	private double tEndWaiting;
-	
+
 	private boolean cancelOperation;
-	
-	public Patient(double preparationserviceTime, double operationServiceTime, double recoveryServiceTime, boolean cancelOperation) {
+
+	public Patient(double preparationserviceTime, double operationServiceTime, double recoveryServiceTime,
+			boolean cancelOperation) {
 		this.PreparationserviceTime = preparationserviceTime;
 		this.operationServiceTime = operationServiceTime;
 		this.recoveryServiceTime = recoveryServiceTime;
 		this.cancelOperation = cancelOperation;
 	}
-	
 
 	/*
 	 * activates patient
@@ -41,79 +41,80 @@ public class Patient extends SimulationEntity {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/*
-	 * Simulate patient going through the system
-	 * Preparation -> Surgery -> Recovery
+	 * Simulate patient going through the system Preparation -> Surgery -> Recovery
 	 */
 	public void run() {
-		//record time patient arrives
+		// record time patient arrives
 		this.arrivalTime = Scheduler.currentTime();
 
-		//add to total the number of patients currently waiting to get to preparation
-		Surgery.nQeueued += Surgery.preparationQueue.numberWaiting();
+		// add to total the number of patients currently waiting to get to preparation
+		Surgery.nQueued += Surgery.preparationQueue.numberWaiting();
 		Surgery.nTotal++;
-		
-		//release locks after getting  to next stage
+
+		// release locks after getting to next stage
 		try {
-			//queue to preparation facility
+			// queue to preparation facility
 			Surgery.preparationQueue.get(this);
-			//spend time in preparation
+
+			// spend time in preparation
 			hold(this.PreparationserviceTime);
-			//check for cancellation
+
+			// check for cancellation
 			if (this.cancelOperation) {
 				Surgery.operationsCancelled++;
 				Surgery.preparationQueue.release();
 				terminate();
 				return;
 			}
-			//queue to operation
+			// queue to operation
 			Surgery.operationQueue.get(this);
-			//release one space from preparation
+
+			// release one space from preparation
 			Surgery.preparationQueue.release();
-			//spend time in operation
+			// spend time in operation
 			hold(operationServiceTime);
-			//record time when started waiting to get to recovery
+			// record time when started waiting to get to recovery
 			this.tStartedWaiting = Scheduler.currentTime();
-			//queue to recovery
+			// queue to recovery
 			Surgery.recoveryQueue.get(this);
-			//release one space from operation
+
+			// release one space from operation
 			Surgery.operationQueue.release();
-			//record time when ended waiting to get to recovery
+			// record time when ended waiting to get to recovery
 			this.tEndWaiting = Scheduler.currentTime();
-			//record number of patients that have waited to get to recovery
+			// record number of patients that have waited to get to recovery
 			Surgery.nWaited++;
-			//spend time in recovery
+			// spend time in recovery
 			hold(recoveryServiceTime);
-			//release one space from recovery
+			// release one space from recovery
 			Surgery.recoveryQueue.release();
-			//record the time patient deprated
+			// record the time patient deprated
 			this.departureTime = Scheduler.currentTime();
-			//save stats
+			// save stats
 			finished();
-			//remove the patient from the scheduler queue
+			// remove the patient from the scheduler queue
 			terminate();
-			
-			
+
 		} catch (RestartException | SimulationException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
-	
+
 	/*
-	 * update statistics in surgery 
+	 * update statistics in surgery
 	 */
 	public void finished() {
 		double time = departureTime - arrivalTime;
 		double waitingTime = tEndWaiting - tStartedWaiting;
-		
+
 		Surgery.nDeparted++;
 		Surgery.tRecoveryWaiting += waitingTime;
 		Surgery.tTotal += time;
-		
+
 		Surgery.tBusy += this.operationServiceTime;
 	}
-	
+
 }
