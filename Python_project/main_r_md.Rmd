@@ -1,0 +1,278 @@
+---
+title: "main_md"
+output: html_document
+---
+
+```{r}
+library(reticulate)
+```
+
+```{python sim_setup}
+
+# import simpy;
+# import random;
+# from settings import *;
+# from Hospital import Hospital;
+import numpy as np;
+
+import simpy
+import random;
+import settings
+from Hospital import Hospital
+import json
+
+def printStatistics(hospital, sample_number, hospital_number):
+    patients = hospital.patients
+
+    patients_finished = list(filter(lambda p: p.finished, patients))
+    n_finished = len(patients_finished)
+    n_patients = len(patients)
+    mean_blocking_time = hospital.time_operation_theatre_blocked / n_finished
+    mean_queue_at_entrance = hospital.total_queue_at_entrance / n_patients
+    utilization_rate_of_operation_theatre = hospital.total_time_operating / settings.SIM_TIME
+
+    print("-" * 20)
+    print("sample: ", sample_number)
+    print("hospital: ", hospital_number)
+    print("Patients came: ", n_patients)
+    print("Patients got treated: ", n_finished)
+    print("Average time operation theatre was blocked: %.3f" % mean_blocking_time)
+    print("Average queue at entrance: %.3f" % mean_queue_at_entrance)
+    print("Utilization rate of operation theatre: %.3f" % utilization_rate_of_operation_theatre)
+
+    total_throughput_time = sum([p.end_time - p.start_time for p in patients_finished])
+    print("Total throughput time %.3f" % (total_throughput_time))
+    print("Average throughput time %.3f" % (total_throughput_time / n_patients))
+
+    print("-" * 20)
+
+def get_data(hospital):
+    patients = hospital.patients
+
+    patients_finished = list(filter(lambda p: p.finished, patients))
+    n_finished = len(patients_finished)
+    n_patients = len(patients)
+    mean_blocking_time = hospital.time_operation_theatre_blocked / n_finished
+    mean_queue_at_entrance = hospital.total_queue_at_entrance / n_patients
+    utilization_rate_of_operation_theatre = hospital.total_time_operating / settings.SIM_TIME
+
+    total_throughput_time = sum([p.end_time - p.start_time for p in patients_finished])
+
+    patients_json = list(map(lambda x: x.to_dict(), patients))
+
+    #"patients": patients_json,
+    return {
+        "mean_blocking_time": mean_blocking_time,
+        "mean_queue_at_entrance": mean_queue_at_entrance,
+        "utilization_rate_of_operation_theatre": utilization_rate_of_operation_theatre,
+        "total_throughput_time": total_throughput_time
+    }
+
+
+```
+
+
+```{python assignment2, echo = FALSE}
+#random.seed(RANDOM_SEED)
+# env = simpy.Environment()
+# hospital = Hospital(env)
+# env.run(until=SIM_TIME)
+# 
+# print("Simulation commands ended")
+
+# print("Patients came: %7.0f" % (len(hospital.patients)))
+# print("Patients got treated: %7.0f" % (len(hospital.patients_finished)))
+# print("Average time operation theatre was blocked: %7.3f" % (hospital.time_operation_theatre_blocked / len(hospital.patients_finished)))
+# print("Average queue at entrance: %7.3f" % (hospital.total_queue_at_entrance / len(hospital.patients)))
+# print("Utilization rate of operation theatre: %7.3f" % (hospital.total_time_operating / SIM_TIME))
+
+```
+
+# Assignment 3
+## Independent simulations with simPy
+
+```{python assignment3}
+SIM_TIME = 1000
+N_SIM = 20
+PREP_ROOMS = [3,3,4]
+REC_ROOMS = [4,5,5]
+N_CONF = len(PREP_ROOMS)
+#initialize results matrix
+sim_que = np.zeros( (N_SIM, N_CONF) )
+sim_uti = np.zeros( (N_SIM, N_CONF) )
+
+#3d matrix: hospital, sample, {}
+data = []
+
+for config in settings.CONFIGURATIONS:
+    samples = []
+    for sample_i in range(settings.N_SAMPLES):
+        env = simpy.Environment()
+
+        hospital = Hospital(env, config["n_preparation_rooms"], config["n_recovery_rooms"])
+
+        env.run(until=settings.SIM_TIME)
+
+        sample_data = get_data(hospital)
+
+        samples.append(sample_data)
+    
+    data.append(samples)
+
+```
+
+## Calculating results with R
+### Differences between independent simulations
+
+```{r, calc_ci}
+sim_que = py$sim_que
+sim_uti = py$sim_uti
+N_SIM = py$N_SIM
+
+mean_que <- apply(sim_que, 2, mean)
+mean_uti <- apply(sim_uti, 2, mean)
+sd_que <- apply(sim_que, 2, sd)
+sd_uti <- apply(sim_uti, 2, sd)
+
+descriptives <- data.frame(
+    PREP_ROOMS = py$PREP_ROOMS,
+    REC_ROOMS = py$REC_ROOMS,
+    MEAN_QUE = mean_que,
+    SD_QUE = sd_que,
+    MEAN_UTI = mean_uti,
+    SD_UTI = sd_uti    
+    )
+
+que_95ci <-data.frame(
+    DIFFERENCE = c("1-2", "1-3", "2-3"),
+    MEAN_D = c(mean_que[1] - mean_que[2], 
+               mean_que[1] - mean_que[3], 
+               mean_que[2] - mean_que[3]
+               ),
+    CI_low = c(t.test(sim_que[,1], sim_que[,2], paired = FALSE)$conf.int[1], 
+               t.test(sim_que[,1], sim_que[,3], paired = FALSE)$conf.int[1],
+               t.test(sim_que[,2], sim_que[,3], paired = FALSE)$conf.int[1]
+    ),
+    CI_high = c(t.test(sim_que[,1], sim_que[,2], paired = FALSE)$conf.int[2], 
+               t.test(sim_que[,1], sim_que[,3], paired = FALSE)$conf.int[2],
+               t.test(sim_que[,2], sim_que[,3], paired = FALSE)$conf.int[2]
+    )
+)
+
+uti_95ci <-data.frame(
+    DIFFERENCE = c("1-2", "1-3", "2-3"),
+    MEAN_D = c(mean_uti[1] - mean_uti[2], 
+               mean_uti[1] - mean_uti[3], 
+               mean_uti[2] - mean_uti[3]
+               ),
+    CI_low = c(t.test(sim_uti[,1], sim_uti[,2], paired = FALSE)$conf.int[1], 
+               t.test(sim_uti[,1], sim_uti[,3], paired = FALSE)$conf.int[1],
+               t.test(sim_uti[,2], sim_uti[,3], paired = FALSE)$conf.int[1]
+    ),
+    CI_high = c(t.test(sim_uti[,1], sim_uti[,2], paired = FALSE)$conf.int[2], 
+               t.test(sim_uti[,1], sim_uti[,3], paired = FALSE)$conf.int[2],
+               t.test(sim_uti[,2], sim_uti[,3], paired = FALSE)$conf.int[2]
+    )
+)
+
+```
+
+```{r print_results, echo = FALSE}
+print("Descriptive statistics")
+print(descriptives)
+print("95% confidence intervals for differences between configurations in mean of average entrance:")
+print(que_95ci)
+print("95% confidence intervals for differences between configurations in utilization rate:")
+print(uti_95ci)
+print("Seems that 0 is included in all intervals")
+```
+
+## Simulated differences with simPy
+
+```{python assignment3_d}
+SIM_TIME = 1000
+N_SIM = 20
+PREP_ROOMS = [3,3,4]
+REC_ROOMS = [4,5,5]
+N_CONF = len(PREP_ROOMS)
+RANDOM_SEEDS = [*range(N_SIM)]
+#initialize results matrix
+sim_que = np.zeros( (N_SIM, N_CONF) )
+sim_uti = np.zeros( (N_SIM, N_CONF) )
+
+for c in range(N_CONF):
+    N_PREPARATION_ROOMS = PREP_ROOMS[c]
+    N_RECOVERY_ROOMS = REC_ROOMS[c]
+    for i in range(N_SIM):
+        random.seed(RANDOM_SEEDS[i])
+        env = simpy.Environment()
+        hospital = Hospital(env)
+        env.run(until = SIM_TIME)
+        sim_que[i,c] = hospital.total_queue_at_entrance / len(hospital.patients)
+        sim_uti[i, c] = hospital.total_time_operating / SIM_TIME
+```
+
+## Calculating results with R
+### Differences between independent simulations
+
+```{r, calc_ci2}
+sim_que = py$sim_que
+sim_uti = py$sim_uti
+N_SIM = py$N_SIM
+
+# Calculate differences of original simulated values
+d_que = cbind(sim_que[,1] - sim_que[,2], sim_que[,1] - sim_que[,3], sim_que[,2] - sim_que[,3])
+d_uti = cbind(sim_uti[,1] - sim_uti[,2], sim_uti[,1] - sim_uti[,3], sim_uti[,2] - sim_uti[,3])
+
+mean_d_que <- apply(d_que, 2, mean)
+mean_d_uti <- apply(d_uti, 2, mean)
+sd_d_que <- apply(d_que, 2, sd)
+sd_d_uti <- apply(d_uti, 2, sd)
+
+descriptives <- data.frame(
+    PREP_ROOMS = py$PREP_ROOMS,
+    REC_ROOMS = py$REC_ROOMS,
+    MEAN_D_QUE = mean_d_que,
+    SD_D_QUE = sd_d_que,
+    MEAN_D_UTI = mean_d_uti,
+    SD_D_UTI = sd_d_uti    
+    )
+
+que_95ci <-data.frame(
+    DIFFERENCE = c("1-2", "1-3", "2-3"),
+    MEAN_D = descriptives$MEAN_D_QUE,
+    CI_low = c(t.test(sim_que[,1], sim_que[,2], paired = TRUE)$conf.int[1], 
+               t.test(sim_que[,1], sim_que[,3], paired = TRUE)$conf.int[1],
+               t.test(sim_que[,2], sim_que[,3], paired = TRUE)$conf.int[1]
+    ),
+    CI_high = c(t.test(sim_que[,1], sim_que[,2], paired = TRUE)$conf.int[2], 
+               t.test(sim_que[,1], sim_que[,3], paired = TRUE)$conf.int[2],
+               t.test(sim_que[,2], sim_que[,3], paired = TRUE)$conf.int[2]
+    )
+)
+
+uti_95ci <-data.frame(
+    DIFFERENCE = c("1-2", "1-3", "2-3"),
+    MEAN_D = descriptives$MEAN_D_UTI,
+    CI_low = c(t.test(sim_uti[,1], sim_uti[,2], paired = TRUE)$conf.int[1], 
+               t.test(sim_uti[,1], sim_uti[,3], paired = TRUE)$conf.int[1],
+               t.test(sim_uti[,2], sim_uti[,3], paired = TRUE)$conf.int[1]
+    ),
+    CI_high = c(t.test(sim_uti[,1], sim_uti[,2], paired = TRUE)$conf.int[2], 
+               t.test(sim_uti[,1], sim_uti[,3], paired = TRUE)$conf.int[2],
+               t.test(sim_uti[,2], sim_uti[,3], paired = TRUE)$conf.int[2]
+    )
+)
+
+```
+
+```{r print_results2, echo = FALSE}
+print("Descriptive statistics")
+print(descriptives)
+print("95% confidence intervals for mean differences between configurations in average entrance:")
+print(que_95ci)
+print("95% confidence intervals for mean differences between configurations in utilization rate:")
+print(uti_95ci)
+print("Seems that there is some bug because all differences are 0")
+```
+
