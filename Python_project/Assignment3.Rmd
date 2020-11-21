@@ -1,6 +1,8 @@
 ---
-title: "main_md"
-output: html_document
+title: "Assignment3 with Python and R"
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup}
@@ -129,7 +131,8 @@ descriptives <- data.frame(
     MEAN_UTI = mean_uti,
     SD_UTI = sd_uti    
     )
-# Table of differences in means between hospitals and 95% confidence interval of the difference based on t-distribution.
+# Table of differences in means between hospitals and 95% confidence interval of
+#      the difference based on t-distribution.
 # Variable average queue
 que_95ci <-data.frame(
     DIFFERENCE = c("1-2", "1-3", "2-3"),
@@ -182,7 +185,7 @@ print("Seems that 0 is included in all intervals, no significant differences")
 #initialize results matrix
 sim_que = np.zeros( (N_SAMPLES, N_HOSP) )
 sim_uti = np.zeros( (N_SAMPLES, N_HOSP) )
-#samples are dependent, seeds are replicated between hospitals (only N_SAMPLE seeds)
+#samples are dependent, seeds are replicated between hospitals (N_SAMPLE seeds)
 RANDOM_SEEDS = [*range(N_SAMPLES)]
 
 for h, config in enumerate(settings.CONFIGURATIONS):
@@ -228,7 +231,7 @@ descriptives <- data.frame(
     SD_D_UTI = sd_d_uti    
     )
 
-# Similar confidence intervals as earlier for comparison
+# Similar confidence intervals now with paired samples (paired = TRUE)
 que_95ci <-data.frame(
     DIFFERENCE = c("1-2", "1-3", "2-3"),
     MEAN_D = descriptives$MEAN_D_QUE,
@@ -264,7 +267,8 @@ print("95% confidence intervals for mean differences between configurations in a
 print(que_95ci)
 print("95% confidence intervals for mean differences between configurations in utilization rate:")
 print(uti_95ci)
-print("Seems that this method is more efficient. Differences between hsopitals (1,3) and (2,3) are differing from zero statistically significantly with both variables, average queue and utilization rate.")
+print("Seems that this method is more efficient. Differences between hospitals (1,3) and (2,3)")
+print("are differing from zero statistically significantly with both variables, average queue and utilization rate.")
 ```
 
 
