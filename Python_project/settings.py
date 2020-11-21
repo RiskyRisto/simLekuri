@@ -22,7 +22,7 @@ MEAN_NEW_PATIENT = 25.0
 NEW_PATIENT_LAMBDA = 1 / MEAN_NEW_PATIENT  # Param. for expovariate distribution
 #TODO: use this
 SEVERE_PATIENT_PROBABILITY = 0.3
-CANCELLING_PROBABILITY = 0.05
+CANCELLING_PROBABILITY = 0.1
 #WEEKS = 12             # Simulation time in weeks
 #SIM_TIME = WEEKS * 7 * 24 * 60  # Simulation time in minutes
 SIM_TIME = 1000
