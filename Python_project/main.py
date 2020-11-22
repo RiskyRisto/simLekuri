@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
     print("SIMULATION FOR INDEPENDENT SAMPLES")
     print("-"*40)
-    run_simulation(False)
+    run_simulation(True)
     print("SIMULATION FOR DEPENDENT SAMPLES")
     print("-"*40)
-    run_simulation(True)
+    run_simulation(False)
