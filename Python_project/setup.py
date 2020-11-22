@@ -8,5 +8,5 @@ setup(name='Hospital Simulation',
       author='Mika Sipilä',
       author_email='mikasip11@gmail.com',
       url='-',
-      install_requires=['simpy', 'random']
+      install_requires=['simpy', 'random', 'numpy']
      )

@@ -5,7 +5,6 @@ Created on Tue Nov 10 13:02:36 2020
 @author: Mika Sipilä
 """
 
-RANDOM_SEED = 42
 N_PREPARATION_ROOMS = 3
 N_OPERATION_ROOMS = 1
 N_RECOVERY_ROOMS = 3
@@ -26,7 +25,9 @@ CANCELLING_PROBABILITY = 0.1
 #WEEKS = 12             # Simulation time in weeks
 #SIM_TIME = WEEKS * 7 * 24 * 60  # Simulation time in minutes
 SIM_TIME = 1000
-N_SAMPLES = 20
+WARM_UP_TIME = 1000
+N_SAMPLES = 40
+RANDOM_SEEDS = [*range(N_SAMPLES)]
 
 CONFIGURATIONS = [
     {

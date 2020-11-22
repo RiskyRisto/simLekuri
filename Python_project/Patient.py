@@ -41,8 +41,9 @@ class Patient():
             yield self.env.timeout(self.operation_cancelled_time)
             self.hospital.preparation.release(preparation_request)
         else:
-            # for calculating average queue at entrance
-            self.hospital.total_queue_at_entrance += len(self.hospital.preparation.queue) 
+            # for calculating average queue at entrance. Doesn't collect data in warm up period.
+            if self.env.now > settings.WARM_UP_TIME:
+                self.hospital.total_queue_at_entrance += len(self.hospital.preparation.queue) 
             yield self.env.timeout(self.preparation_time)
             # free the preparation room
             self.process = self.env.process(self.operation(preparation_request)) 
@@ -54,8 +55,9 @@ class Patient():
         # free the preparation room
         self.hospital.preparation.release(preparation_request) 
         yield self.env.timeout(self.operation_time)
-        # for calculation utilization rate
-        self.hospital.total_time_operating += self.operation_time 
+        # for calculation utilization rate. Doesn't collect data in warm up period.
+        if self.env.now > settings.WARM_UP_TIME:
+            self.hospital.total_time_operating += self.operation_time 
         self.time_operation_done = self.env.now
         # start queing if there is no space in recovery
         self.process = self.env.process(self.recovery(operation_request)) 
@@ -71,8 +73,9 @@ class Patient():
 
         self.finished = True
         #self.hospital.patients_finished.append(self)
-        # for calculating average blocked time
-        self.hospital.time_operation_theatre_blocked += (self.time_recovery_start - self.time_operation_done) 
+        # for calculating average blocked time. Doesn't collect data in warm up period.
+        if self.env.now > settings.WARM_UP_TIME:
+            self.hospital.time_operation_theatre_blocked += (self.time_recovery_start - self.time_operation_done) 
         #print("Time spent in process: %6.3f" % (self.end_time - self.start_time))
 
     def __str__(self):

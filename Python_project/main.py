@@ -6,8 +6,9 @@ Created on Tue Nov 10 12:07:49 2020
 """
 
 import simpy
-import random;
+import random
 import settings
+import statistics
 from Hospital import Hospital
 import json
 
@@ -48,7 +49,7 @@ def get_data(hospital):
 
     total_throughput_time = sum([p.end_time - p.start_time for p in patients_finished])
 
-    patients_json = list(map(lambda x: x.to_dict(), patients))
+    #patients_json = list(map(lambda x: x.to_dict(), patients))
 
     #"patients": patients_json,
     return {
@@ -58,10 +59,7 @@ def get_data(hospital):
         "total_throughput_time": total_throughput_time
     }
 
-
-
-if __name__ == "__main__":
-    random.seed(settings.RANDOM_SEED)
+def run_simulation(independence):
 
     #3d matrix: hospital, sample, {}
     data = []
@@ -69,18 +67,34 @@ if __name__ == "__main__":
     for config in settings.CONFIGURATIONS:
         samples = []
         for sample_i in range(settings.N_SAMPLES):
+            if not independence:
+                random.seed(random_seeds[sample_i])
             env = simpy.Environment()
 
             hospital = Hospital(env, config["n_preparation_rooms"], config["n_recovery_rooms"])
 
-            env.run(until=settings.SIM_TIME)
+            env.run(until=settings.WARM_UP_TIME + settings.SIM_TIME)
 
             sample_data = get_data(hospital)
 
             samples.append(sample_data)
         
         data.append(samples)
+    
+    statistics.calculate_and_print_statistics(data)
 
     #save to file
-    with open("data.json", mode="w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
+    #with open("data.json", mode="w", encoding="utf-8") as f:
+    #    json.dump(data, f, indent=4)
+
+
+if __name__ == "__main__":
+    #random.seed(settings.RANDOM_SEED)
+    random_seeds = [*range(settings.N_SAMPLES)]
+
+    print("SIMULATION FOR INDEPENDENT SAMPLES")
+    print("-"*40)
+    run_simulation(False)
+    print("SIMULATION FOR DEPENDENT SAMPLES")
+    print("-"*40)
+    run_simulation(True)
