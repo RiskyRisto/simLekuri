@@ -71,7 +71,7 @@ def run_simulation(independence):
                 random.seed(random_seeds[sample_i])
             env = simpy.Environment()
 
-            hospital = Hospital(env, config["n_preparation_rooms"], config["n_recovery_rooms"])
+            hospital = Hospital(env, config["n_preparation_rooms"], config["n_recovery_rooms"], 0.1)
 
             env.run(until=settings.WARM_UP_TIME + settings.SIM_TIME)
 

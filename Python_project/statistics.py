@@ -38,15 +38,20 @@ def calculate_and_print_statistics(data):
     for i in range(len(data)):
         for j in range(len(data)):
             if not i == j and j > i:
+                blocking_time_differences = numpy.array(blocking_times[i]) - numpy.array(blocking_times[j])
                 entrance_queue_differences = numpy.array(entrance_mean_queues[i]) - numpy.array(entrance_mean_queues[j])
                 utilization_rate_differences = numpy.array(utilization_rates[i]) - numpy.array(utilization_rates[j])
                 
+                mean_blocking_time_difference = numpy.mean(blocking_time_differences)
+                blocking_time_difference_ci = calculate_95_ci(blocking_time_differences)
                 mean_queue_at_entrance_difference = numpy.mean(entrance_queue_differences)
                 entrance_mean_queue_difference_ci = calculate_95_ci(entrance_queue_differences)
                 mean_utilization_rate_difference = numpy.mean(utilization_rate_differences)
                 mean_utilization_rate_difference_ci = calculate_95_ci(utilization_rate_differences)
 
                 print("Differences between hospital%i and hospital%i" % (i + 1, j + 1))
+                print("Difference of means of blocking time: %.3f" % (mean_blocking_time_difference))
+                print("95 %% Confidence interval for difference of means of blocking times: [%.3f, %.3f]" % (blocking_time_difference_ci[0], blocking_time_difference_ci[1]))
                 print("Difference of means of mean queues at entrance: %.3f" % (mean_queue_at_entrance_difference))
                 print("95 %% Confidence interval for difference of means of mean queues at entrance: [%.3f, %.3f]" % (entrance_mean_queue_difference_ci[0], entrance_mean_queue_difference_ci[1]))
                 print("Difference of means of utilization rates: %.3f" % (mean_utilization_rate_difference))

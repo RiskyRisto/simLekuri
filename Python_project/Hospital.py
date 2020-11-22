@@ -12,7 +12,7 @@ import simpy
 
 class Hospital:
     
-    def __init__(self, env, n_prep, n_rec):
+    def __init__(self, env, n_prep, n_rec, cancelling_prob):
         self.env = env
         self.patients = []
         #self.patients_finished = []
@@ -24,6 +24,7 @@ class Hospital:
         self.time_operation_theatre_blocked = 0
         self.total_queue_at_entrance = 0
         self.total_time_operating = 0
+        self.cancelling_prob = cancelling_prob
         self.process = self.env.process(self.run())
     
     def run(self):
