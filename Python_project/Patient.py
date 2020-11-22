@@ -21,7 +21,7 @@ class Patient():
         self.recovery_time = random.expovariate(settings.RECOVERY_LAMBDA) 
         #TODO: use this
         self.severe = helpers.bool_with_probability(settings.SEVERE_PATIENT_PROBABILITY)
-        self.operation_cancelled = helpers.bool_with_probability(hospital.cancelling_prob)
+        self.operation_cancelled = helpers.bool_with_probability(hospital.cancelling_prop)
         #Random time of preparation when new information is found and operation is cancelled
         self.operation_cancelled_time = random.uniform(0, self.preparation_time) 
         self.start_time = self.env.now

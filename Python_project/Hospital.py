@@ -12,7 +12,7 @@ import simpy
 
 class Hospital:
     
-    def __init__(self, env, n_prep, n_rec, cancelling_prob):
+    def __init__(self, env, n_prep, n_rec, cancelling_prop, new_patient_lambda):
         self.env = env
         self.patients = []
         #self.patients_finished = []
@@ -24,12 +24,13 @@ class Hospital:
         self.time_operation_theatre_blocked = 0
         self.total_queue_at_entrance = 0
         self.total_time_operating = 0
-        self.cancelling_prob = cancelling_prob
+        self.cancelling_prop = cancelling_prop
+        self.new_patient_lambda = new_patient_lambda
         self.process = self.env.process(self.run())
     
     def run(self):
         while True:
-            next_patient_time = random.expovariate(settings.NEW_PATIENT_LAMBDA)
+            next_patient_time = random.expovariate(self.new_patient_lambda)
             yield self.env.timeout(next_patient_time)
             self.generate_patient()
             

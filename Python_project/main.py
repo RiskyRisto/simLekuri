@@ -63,6 +63,8 @@ def run_simulation(independence):
 
     #3d matrix: hospital, sample, {}
     data = []
+    if independence:
+        random.seed(42)
 
     for config in settings.CONFIGURATIONS:
         samples = []
@@ -70,18 +72,30 @@ def run_simulation(independence):
             if not independence:
                 random.seed(random_seeds[sample_i])
             env = simpy.Environment()
-
-            hospital = Hospital(env, config["n_preparation_rooms"], config["n_recovery_rooms"], 0.1)
-
+            hospital = Hospital(env, config["n_preparation_rooms"], config["n_recovery_rooms"], config["cancelling_prop"], config["new_patient_lambda"])
             env.run(until=settings.WARM_UP_TIME + settings.SIM_TIME)
-
             sample_data = get_data(hospital)
-
             samples.append(sample_data)
-        
         data.append(samples)
-    
     statistics.calculate_and_print_statistics(data)
+
+    twist_test_data = []
+
+    # Test twisted version againt original version
+    print("RESULTS FOR TESTING TWIST")
+    print("-" * 20)
+    for config in settings.CONFIGURATIONS_FOR_TESTING_TWIST:
+        samples = []
+        for sample_i in range(settings.N_SAMPLES):
+            if not independence:
+                random.seed(random_seeds[sample_i])
+            env = simpy.Environment()
+            hospital = Hospital(env, config["n_preparation_rooms"], config["n_recovery_rooms"], config["cancelling_prop"], config["new_patient_lambda"])
+            env.run(until=settings.WARM_UP_TIME + settings.SIM_TIME)
+            sample_data = get_data(hospital)
+            samples.append(sample_data)
+        twist_test_data.append(samples)
+    statistics.calculate_and_print_statistics(twist_test_data)
 
     #save to file
     #with open("data.json", mode="w", encoding="utf-8") as f:

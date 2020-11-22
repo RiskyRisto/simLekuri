@@ -17,7 +17,7 @@ RECOVERY_LAMBDA = 1 / 40.0
 #OPERATION_BETA = 1/6.0
 #RECOVERY_ALPHA = 480.0
 #RECOVERY_BETA = 1/6.0
-MEAN_NEW_PATIENT = 25.0
+MEAN_NEW_PATIENT = 20.0
 NEW_PATIENT_LAMBDA = 1 / MEAN_NEW_PATIENT  # Param. for expovariate distribution
 #TODO: use this
 SEVERE_PATIENT_PROBABILITY = 0.3
@@ -32,14 +32,34 @@ RANDOM_SEEDS = [*range(N_SAMPLES)]
 CONFIGURATIONS = [
     {
         "n_preparation_rooms": 3,
-        "n_recovery_rooms": 4
+        "n_recovery_rooms": 4,
+        "cancelling_prop": 0.1,
+        "new_patient_lambda": NEW_PATIENT_LAMBDA
     },
     {
         "n_preparation_rooms": 3,
-        "n_recovery_rooms": 5
+        "n_recovery_rooms": 5,
+        "cancelling_prop": 0.1,
+        "new_patient_lambda": NEW_PATIENT_LAMBDA
     },
     {
         "n_preparation_rooms": 4,
-        "n_recovery_rooms": 5
+        "n_recovery_rooms": 5,
+        "cancelling_prop": 0.1,
+        "new_patient_lambda": NEW_PATIENT_LAMBDA
+    }
+]
+
+CONFIGURATIONS_FOR_TESTING_TWIST = [
+    {
+        "n_preparation_rooms": 3,
+        "n_recovery_rooms": 4,
+        "cancelling_prop": 0.1,
+        "new_patient_lambda": 1/20
+    }, {
+        "n_preparation_rooms": 3,
+        "n_recovery_rooms": 4,
+        "cancelling_prop": 0,
+        "new_patient_lambda": NEW_PATIENT_LAMBDA
     }
 ]
