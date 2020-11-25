@@ -9,10 +9,20 @@ import random;
 import settings
 from Patient import Patient;
 import simpy
+import helpers
 
 class Hospital:
-    
-    def __init__(self, env, n_prep, n_rec, cancelling_prob):
+    """
+    Params:
+        env: simpy.Environment object
+        n_prep: number of preparation room slots
+        n_rec: number of recovery room slots
+        prep_s: function to generate random preparation times
+        rec_s: function to generate random recovery times
+        inter_s: function to generate random interarrival times
+        cancelling_prop: probability that operation gets cancelled during preparation
+    """
+    def __init__(self, env, n_prep, n_rec, prep_s, rec_s, inter_s, cancelling_prob):
         self.env = env
         self.patients = []
         #self.patients_finished = []
@@ -25,15 +35,28 @@ class Hospital:
         self.total_queue_at_entrance = 0
         self.total_time_operating = 0
         self.cancelling_prob = cancelling_prob
+
+        #constant here
+        self.operation_time_stream = helpers.exp(20)
+
+        self.preparation_time_stream = prep_s
+        self.recovery_time_stream = rec_s
+        self.interarrivaltime_stream = inter_s
+
         self.process = self.env.process(self.run())
+
     
     def run(self):
         while True:
-            next_patient_time = random.expovariate(settings.NEW_PATIENT_LAMBDA)
+            #next_patient_time = random.expovariate(settings.NEW_PATIENT_LAMBDA)
+            next_patient_time = self.interarrivaltime_stream()
             yield self.env.timeout(next_patient_time)
             self.generate_patient()
             
     def generate_patient(self):
-        patient = Patient(self.env, self)
+        preparation_time = self.preparation_time_stream()
+        operation_time = self.operation_time_stream()
+        recovery_time = self.recovery_time_stream()
+        patient = Patient(self.env, self, preparation_time, operation_time, recovery_time)
         self.patients.append(patient)
         

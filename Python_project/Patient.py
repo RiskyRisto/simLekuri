@@ -8,19 +8,30 @@ import random;
 import settings
 import helpers
 
-class Patient():
-    
-    def __init__(self, env, hospital):
+class Patient:
+    """
+    Params:
+        env: simpy.Environment object
+        hospital: Hospital object
+        preparation_time: patient's preparation time 
+        operation_time: patient's operation time
+        recovery_time: patient's recovery time
+    """
+    def __init__(self, env, hospital, preparation_time, operation_time, recovery_time):
         self.hospital = hospital
         self.env = env
         #random.gammavariate(PREPARATION_ALPHA, PREPARATION_BETA)
         #random.gammavariate(OPERATION_ALPHA, OPERATION_BETA)
         #random.gammavariate(RECOVERY_ALPHA, RECOVERY_BETA)
-        self.preparation_time = random.expovariate(settings.PREPARATION_LAMBDA) 
-        self.operation_time = random.expovariate(settings.OPERATION_LAMBDA) 
-        self.recovery_time = random.expovariate(settings.RECOVERY_LAMBDA) 
+        
+        self.preparation_time = preparation_time
+        self.operation_time = operation_time 
+        self.recovery_time = recovery_time
+        #self.preparation_time = random.expovariate(settings.PREPARATION_LAMBDA) 
+        #self.recovery_time = random.expovariate(settings.RECOVERY_LAMBDA) 
         #TODO: use this
         self.severe = helpers.bool_with_probability(settings.SEVERE_PATIENT_PROBABILITY)
+
         self.operation_cancelled = helpers.bool_with_probability(hospital.cancelling_prob)
         #Random time of preparation when new information is found and operation is cancelled
         self.operation_cancelled_time = random.uniform(0, self.preparation_time) 

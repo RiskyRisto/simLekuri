@@ -4,6 +4,8 @@ Created on Tue Nov 10 13:02:36 2020
 
 @author: Mika Sipilä
 """
+from helpers import unif, exp
+
 
 N_PREPARATION_ROOMS = 3
 N_OPERATION_ROOMS = 1
@@ -29,17 +31,27 @@ WARM_UP_TIME = 1000
 N_SAMPLES = 40
 RANDOM_SEEDS = [*range(N_SAMPLES)]
 
+
 CONFIGURATIONS = [
     {
-        "n_preparation_rooms": 3,
-        "n_recovery_rooms": 4
-    },
-    {
-        "n_preparation_rooms": 3,
-        "n_recovery_rooms": 5
+        "n_preparation_rooms": 4,
+        "n_recovery_rooms": 4,
+        "preparation_time_random_stream": exp(40),
+        "recovery_time_random_stream": unif(30,50),
+        "interarrival_time_random_stream": exp(25)
     },
     {
         "n_preparation_rooms": 4,
-        "n_recovery_rooms": 5
+        "n_recovery_rooms": 5,
+        "preparation_time_random_stream": exp(40),
+        "recovery_time_random_stream": unif(30,50),
+        "interarrival_time_random_stream": unif(20,30)
+    },
+    {
+        "n_preparation_rooms": 5,
+        "n_recovery_rooms": 4,
+        "preparation_time_random_stream": exp(40),
+        "recovery_time_random_stream": unif(30,50),
+        "interarrival_time_random_stream": unif(20,25)
     }
 ]
