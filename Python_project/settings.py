@@ -4,6 +4,8 @@ Created on Tue Nov 10 13:02:36 2020
 
 @author: Mika Sipilä
 """
+from helpers import unif, exp
+
 
 N_PREPARATION_ROOMS = 3
 N_OPERATION_ROOMS = 1
@@ -29,24 +31,28 @@ WARM_UP_TIME = 1000
 N_SAMPLES = 40
 RANDOM_SEEDS = [*range(N_SAMPLES)]
 
+
 CONFIGURATIONS = [
     {
-        "n_preparation_rooms": 3,
+        "n_preparation_rooms": 4,
         "n_recovery_rooms": 4,
-        "cancelling_prop": 0.1,
-        "new_patient_lambda": NEW_PATIENT_LAMBDA
-    },
-    {
-        "n_preparation_rooms": 3,
-        "n_recovery_rooms": 5,
-        "cancelling_prop": 0.1,
-        "new_patient_lambda": NEW_PATIENT_LAMBDA
+        "preparation_time_random_stream": exp(40),
+        "recovery_time_random_stream": unif(30,50),
+        "interarrival_time_random_stream": exp(25)
     },
     {
         "n_preparation_rooms": 4,
         "n_recovery_rooms": 5,
-        "cancelling_prop": 0.1,
-        "new_patient_lambda": NEW_PATIENT_LAMBDA
+        "preparation_time_random_stream": exp(40),
+        "recovery_time_random_stream": unif(30,50),
+        "interarrival_time_random_stream": unif(20,30)
+    },
+    {
+        "n_preparation_rooms": 5,
+        "n_recovery_rooms": 4,
+        "preparation_time_random_stream": exp(40),
+        "recovery_time_random_stream": unif(30,50),
+        "interarrival_time_random_stream": unif(20,25)
     }
 ]
 
@@ -54,12 +60,16 @@ CONFIGURATIONS_FOR_TESTING_TWIST = [
     {
         "n_preparation_rooms": 3,
         "n_recovery_rooms": 4,
-        "cancelling_prop": 0.1,
-        "new_patient_lambda": 1/20
+        "cancelling_prob": 0.1,
+        "preparation_time_random_stream": exp(40),
+        "recovery_time_random_stream": unif(30,50),
+        "interarrival_time_random_stream": unif(20,25)
     }, {
         "n_preparation_rooms": 3,
         "n_recovery_rooms": 4,
-        "cancelling_prop": 0,
-        "new_patient_lambda": NEW_PATIENT_LAMBDA
+        "cancelling_prob": 0,
+        "preparation_time_random_stream": exp(40),
+        "recovery_time_random_stream": unif(30,50),
+        "interarrival_time_random_stream": unif(20,25)
     }
 ]

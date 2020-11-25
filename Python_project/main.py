@@ -72,7 +72,15 @@ def run_simulation(independence):
             if not independence:
                 random.seed(random_seeds[sample_i])
             env = simpy.Environment()
-            hospital = Hospital(env, config["n_preparation_rooms"], config["n_recovery_rooms"], config["cancelling_prop"], config["new_patient_lambda"])
+
+            n_prep = config["n_preparation_rooms"]
+            n_rec = config["n_recovery_rooms"]
+            prep_s = config["preparation_time_random_stream"]
+            rec_s = config["recovery_time_random_stream"]
+            inter_s = config["interarrival_time_random_stream"]
+
+            hospital = Hospital(env, n_prep, n_rec, prep_s, rec_s, inter_s, 0.1)
+
             env.run(until=settings.WARM_UP_TIME + settings.SIM_TIME)
             sample_data = get_data(hospital)
             samples.append(sample_data)
@@ -90,7 +98,16 @@ def run_simulation(independence):
             if not independence:
                 random.seed(random_seeds[sample_i])
             env = simpy.Environment()
-            hospital = Hospital(env, config["n_preparation_rooms"], config["n_recovery_rooms"], config["cancelling_prop"], config["new_patient_lambda"])
+
+            n_prep = config["n_preparation_rooms"]
+            n_rec = config["n_recovery_rooms"]
+            prep_s = config["preparation_time_random_stream"]
+            rec_s = config["recovery_time_random_stream"]
+            inter_s = config["interarrival_time_random_stream"]
+            cancelling_prob = config["cancelling_prob"]
+
+            hospital = Hospital(env, n_prep, n_rec, prep_s, rec_s, inter_s, cancelling_prob)
+            
             env.run(until=settings.WARM_UP_TIME + settings.SIM_TIME)
             sample_data = get_data(hospital)
             samples.append(sample_data)
