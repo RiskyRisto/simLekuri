@@ -36,6 +36,7 @@ CONFIGURATIONS = [
     {
         "n_preparation_rooms": 4,
         "n_recovery_rooms": 4,
+        "cancelling_prob": CANCELLING_PROBABILITY,
         "preparation_time_random_stream": exp(40),
         "recovery_time_random_stream": unif(30,50),
         "interarrival_time_random_stream": exp(25)
@@ -43,6 +44,7 @@ CONFIGURATIONS = [
     {
         "n_preparation_rooms": 4,
         "n_recovery_rooms": 5,
+        "cancelling_prob": CANCELLING_PROBABILITY,
         "preparation_time_random_stream": exp(40),
         "recovery_time_random_stream": unif(30,50),
         "interarrival_time_random_stream": unif(20,30)
@@ -50,6 +52,7 @@ CONFIGURATIONS = [
     {
         "n_preparation_rooms": 5,
         "n_recovery_rooms": 4,
+        "cancelling_prob": CANCELLING_PROBABILITY,
         "preparation_time_random_stream": exp(40),
         "recovery_time_random_stream": unif(30,50),
         "interarrival_time_random_stream": unif(20,25)

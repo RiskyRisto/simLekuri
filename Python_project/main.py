@@ -12,30 +12,7 @@ import statistics
 from Hospital import Hospital
 import json
 
-def printStatistics(hospital, sample_number, hospital_number):
-    patients = hospital.patients
 
-    patients_finished = list(filter(lambda p: p.finished, patients))
-    n_finished = len(patients_finished)
-    n_patients = len(patients)
-    mean_blocking_time = hospital.time_operation_theatre_blocked / n_finished
-    mean_queue_at_entrance = hospital.total_queue_at_entrance / n_patients
-    utilization_rate_of_operation_theatre = hospital.total_time_operating / settings.SIM_TIME
-
-    print("-" * 20)
-    print("sample: ", sample_number)
-    print("hospital: ", hospital_number)
-    print("Patients came: ", n_patients)
-    print("Patients got treated: ", n_finished)
-    print("Average time operation theatre was blocked: %.3f" % mean_blocking_time)
-    print("Average queue at entrance: %.3f" % mean_queue_at_entrance)
-    print("Utilization rate of operation theatre: %.3f" % utilization_rate_of_operation_theatre)
-
-    total_throughput_time = sum([p.end_time - p.start_time for p in patients_finished])
-    print("Total throughput time %.3f" % (total_throughput_time))
-    print("Average throughput time %.3f" % (total_throughput_time / n_patients))
-
-    print("-" * 20)
 
 def get_data(hospital):
     patients = hospital.patients
@@ -59,31 +36,42 @@ def get_data(hospital):
         "total_throughput_time": total_throughput_time
     }
 
-def run_simulation(independence):
+def run_experiment(config, n_samples, independence, random_seeds):
+    """
+    Run clinic simulation with one configuration n_samples times
+    each with their own random_seed if not independence  
+    Returns:
+        [dict()] data gathered from each of the samples
+    """
+    samples = []
+    for sample_i in range(n_samples):
+        if not independence:
+            random.seed(random_seeds[sample_i])
+        env = simpy.Environment()
 
-    #3d matrix: hospital, sample, {}
+        n_prep = config["n_preparation_rooms"]
+        n_rec = config["n_recovery_rooms"]
+        prep_s = config["preparation_time_random_stream"]
+        rec_s = config["recovery_time_random_stream"]
+        inter_s = config["interarrival_time_random_stream"]
+        cancelling_prob = config["cancelling_prob"]
+        
+        hospital = Hospital(env, n_prep, n_rec, prep_s, rec_s, inter_s, cancelling_prob)
+
+        env.run(until=settings.WARM_UP_TIME + settings.SIM_TIME)
+        sample_data = get_data(hospital)
+        samples.append(sample_data)
+
+    return samples
+
+def run_simulation(independence):
+    #list(list(dict()))
     data = []
     if independence:
         random.seed(42)
 
     for config in settings.CONFIGURATIONS:
-        samples = []
-        for sample_i in range(settings.N_SAMPLES):
-            if not independence:
-                random.seed(random_seeds[sample_i])
-            env = simpy.Environment()
-
-            n_prep = config["n_preparation_rooms"]
-            n_rec = config["n_recovery_rooms"]
-            prep_s = config["preparation_time_random_stream"]
-            rec_s = config["recovery_time_random_stream"]
-            inter_s = config["interarrival_time_random_stream"]
-
-            hospital = Hospital(env, n_prep, n_rec, prep_s, rec_s, inter_s, 0.1)
-
-            env.run(until=settings.WARM_UP_TIME + settings.SIM_TIME)
-            sample_data = get_data(hospital)
-            samples.append(sample_data)
+        samples = run_experiment(config, settings.N_SAMPLES, independence, random_seeds)
         data.append(samples)
     statistics.calculate_and_print_statistics(data)
 
@@ -93,24 +81,7 @@ def run_simulation(independence):
     print("RESULTS FOR TESTING TWIST")
     print("-" * 20)
     for config in settings.CONFIGURATIONS_FOR_TESTING_TWIST:
-        samples = []
-        for sample_i in range(settings.N_SAMPLES):
-            if not independence:
-                random.seed(random_seeds[sample_i])
-            env = simpy.Environment()
-
-            n_prep = config["n_preparation_rooms"]
-            n_rec = config["n_recovery_rooms"]
-            prep_s = config["preparation_time_random_stream"]
-            rec_s = config["recovery_time_random_stream"]
-            inter_s = config["interarrival_time_random_stream"]
-            cancelling_prob = config["cancelling_prob"]
-
-            hospital = Hospital(env, n_prep, n_rec, prep_s, rec_s, inter_s, cancelling_prob)
-            
-            env.run(until=settings.WARM_UP_TIME + settings.SIM_TIME)
-            sample_data = get_data(hospital)
-            samples.append(sample_data)
+        samples = run_experiment(config, settings.N_SAMPLES, independence, random_seeds)
         twist_test_data.append(samples)
     statistics.calculate_and_print_statistics(twist_test_data)
 
