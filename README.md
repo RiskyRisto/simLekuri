@@ -37,9 +37,8 @@ https://www.python.org/downloads/
 `git clone https://github.com/RiskyRisto/simLekuri.git`
 
 2. Install libraries 
-2.1. install simpy using instruction at
-https://simpy.readthedocs.io/en/latest/simpy_intro/installation.html
-2.2. install numpy using instruction at https://numpy.org/install/
+  * install simpy using instruction at https://simpy.readthedocs.io/en/latest/simpy_intro/installation.html
+  * install numpy using instruction at https://numpy.org/install/
 
 3. run python script \
 `python main.py`
