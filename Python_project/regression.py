@@ -38,8 +38,7 @@ class RegressionModel:
         #@ is a general matrix multiplication / dot product operator in numpy
         self.beta = np.linalg.inv(X.T @ X) @ X.T @ y
         if verbose:
-            print(self)
-        return self.beta
+            print(f"beta {self.beta}")
 
     def expandedX(self, X):
         """
@@ -82,45 +81,90 @@ class RegressionModel:
 
     def __str__(self):
         with np.printoptions(precision=3, suppress=True):
-            s = str({
-            "beta": self.beta,
-            "mse": self.mse(X,y),
-            "R^2": self.r2(X,y)
-        })
-        return s 
+            s = "beta {}".format(self.beta)
+        return s
 
+    @classmethod
+    def crossValidate(cls, X, y):
+        """
+        Leave one out cross validation
+        """
+        error = 0
+        model = RegressionModel()
+        #take one row at the time from the dataset into validation
+        #and add error to total
+        for i in range(len(X)):
+            Xout = X[i:i+1]
+            yout = y[i:i+1]
+            Xin = np.delete(X, i, axis=0)
+            yin = np.delete(y, i, axis=0)
+            model.fit(Xin, yin)
+            y_predicted = model.predict(Xout)
+            error += (yout - y_predicted) ** 2.0
+
+        error = error / len(X)
+        return error
+            
+def experiment():
+    from helpers import exp, unif
+    import settings
+    import Hospital
+    import main
+    import json
+    random_seeds = [1]
+
+    inter = [exp(25), exp(22.5), unif(20,30), unif(20,25)]
+    prep = [exp(40), unif(30,50)]
+    rec = [exp(40), unif(30,50)]
+    n_prep = [4,5]
+    n_rec = [4,5]
+    
+    designMatrix = []
+    for a in range(len(inter)):
+        for b in range(len(prep)):
+            for c in range(len(rec)):
+                for d in range(len(n_prep)):
+                    for e in range(len(n_rec)):
+                        designMatrix.append([a,b,c,d,e])
+    #exp unif
+    #25,22.5
+    """     
+    designMatrix = [
+        [2, 1, 0, 1, 0],
+        [2, 1, 0, 0, 1],
+        [2, 0, 1, 1, 0],
+        [2, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1],
+        [1, 0, 1, 1, 0],
+        [1, 1, 0, 0, 1],
+        [1, 1, 0, 1, 0],
+    ] """
+
+    n_experiments = len(designMatrix)
+    n_features = len(designMatrix[0])
+
+    X = np.array(designMatrix, dtype=float)
+    y = np.ones(n_experiments, dtype=float)
+
+    for i,ex in enumerate(designMatrix):
+        config = {
+            "interarrival_time_random_stream": inter[ex[0]],
+            "preparation_time_random_stream": prep[ex[1]],
+            "recovery_time_random_stream": rec[ex[2]],
+            "n_preparation_rooms": n_prep[ex[3]],
+            "n_recovery_rooms": n_rec[ex[4]],
+            "cancelling_prob": settings.CANCELLING_PROBABILITY
+        }
+        samples = main.run_experiment(config, 1, True, random_seeds)
+        sample = samples[0]
+        queue_length = sample["mean_queue_at_entrance"]
+        y[i] = queue_length
+        
+    model = RegressionModel()
+    model.fit(X, y, verbose = True)
+    print("mse", model.mse(X,y))
+    print("r^2", model.r2(X,y))
 
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-
-    model = RegressionModel()
-
-    n = 100
-    x1 = np.random.exponential(scale=10, size=n)
-    x2 = np.random.exponential(scale=20, size=n)
-    x3 = np.random.normal(0, 4, size=n)
-    x4 = np.random.normal(4, 5, size=n)
-    #y = x1 + 2 * x2 + 100
-    y = 2 * x1 - 3 * x2 + x3 + 15
-    #y = 2 * x1 
-
-    X = np.column_stack((x1, x2, x4)) 
-
-    params = model.fit(X,y, verbose=False)
-    y_predicted = model.predict(X)
-    print(model)
-    #print("params",params)
-    #print("mse",model.mse(X,y))
-    #print("r2", model.r2(X,y))
-    
-    plt.rcParams["legend.fontsize"] = 10
-
-    fig = plt.figure()
-    ax = fig.gca(projection="3d")
-
-    ax.scatter(x1, x2, y_predicted, label='predicted' + str(params))
-    ax.scatter(x1, x2, y, label='actual')
-    ax.legend()
-
-    plt.show()
+    experiment()
