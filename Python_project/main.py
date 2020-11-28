@@ -16,12 +16,14 @@ import json
 
 def get_data(hospital):
     patients = hospital.patients
-
+    n_non_warm_up_patients = len(list(filter(lambda p: not p.warmup, patients)))
+    #TODO: tarkista että mitä warm upin aikana potilaista kerätään
     patients_finished = list(filter(lambda p: p.finished, patients))
     n_finished = len(patients_finished)
     n_patients = len(patients)
     mean_blocking_time = hospital.time_operation_theatre_blocked / n_finished
-    mean_queue_at_entrance = hospital.total_queue_at_entrance / n_patients
+    #mean_queue_at_entrance = hospital.total_queue_at_entrance / n_patients
+    mean_queue_at_entrance = hospital.total_queue_at_entrance / n_non_warm_up_patients
     utilization_rate_of_operation_theatre = hospital.total_time_operating / settings.SIM_TIME
 
     total_throughput_time = sum([p.end_time - p.start_time for p in patients_finished])

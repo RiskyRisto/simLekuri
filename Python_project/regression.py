@@ -1,4 +1,10 @@
 import numpy as np
+import main
+import json
+
+import settings
+import Hospital
+from helpers import exp, unif
 
 """
 Build a regression model for the average queue length. 
@@ -104,67 +110,120 @@ class RegressionModel:
 
         error = error / len(X)
         return error
-            
-def experiment():
-    from helpers import exp, unif
-    import settings
-    import Hospital
-    import main
-    import json
-    random_seeds = [1]
 
-    inter = [exp(25), exp(22.5), unif(20,30), unif(20,25)]
+def getMapping(ex):
+    """
+    Params:
+        ex: list(int) indices of corresponding variables
+    """
+    inter_dist = [exp, unif]
+    inter_time = [25, 22.5]
+    inter = [
+        [exp(25), exp(22.5)], 
+        [unif(20,30), unif(20,25)]
+    ]
     prep = [exp(40), unif(30,50)]
     rec = [exp(40), unif(30,50)]
     n_prep = [4,5]
     n_rec = [4,5]
-    
-    designMatrix = []
-    for a in range(len(inter)):
-        for b in range(len(prep)):
-            for c in range(len(rec)):
-                for d in range(len(n_prep)):
-                    for e in range(len(n_rec)):
-                        designMatrix.append([a,b,c,d,e])
-    #exp unif
-    #25,22.5
-    """     
-    designMatrix = [
-        [2, 1, 0, 1, 0],
-        [2, 1, 0, 0, 1],
-        [2, 0, 1, 1, 0],
-        [2, 0, 1, 0, 1],
-        [1, 0, 1, 0, 1],
-        [1, 0, 1, 1, 0],
-        [1, 1, 0, 0, 1],
-        [1, 1, 0, 1, 0],
-    ] """
 
-    n_experiments = len(designMatrix)
-    n_features = len(designMatrix[0])
+    interarrival_stream = inter[ex[0]][ex[1]]
+    config = {
+        "interarrival_time_random_stream": interarrival_stream,
+        "preparation_time_random_stream": prep[ex[2]],
+        "recovery_time_random_stream": rec[ex[3]],
+        "n_preparation_rooms": n_prep[ex[4]],
+        "n_recovery_rooms": n_rec[ex[5]],
+        "cancelling_prob": settings.CANCELLING_PROBABILITY
+    }
+
+    return config
+
+def getConfigs():
+    """
+    All 64 
+    """
+    designMatrix = []
+    n_choices = 2
+    for a in range(n_choices):
+        for b in range(n_choices):
+            for c in range(n_choices):
+                for d in range(n_choices):
+                    for e in range(n_choices):
+                        for f in range(n_choices):
+                            designMatrix.append([a,b,c,d,e,f])
+    configs = []
+
+    for ex in designMatrix:
+        config = getMapping(ex)
+        configs.append(config)
 
     X = np.array(designMatrix, dtype=float)
-    y = np.ones(n_experiments, dtype=float)
 
-    for i,ex in enumerate(designMatrix):
-        config = {
-            "interarrival_time_random_stream": inter[ex[0]],
-            "preparation_time_random_stream": prep[ex[1]],
-            "recovery_time_random_stream": rec[ex[2]],
-            "n_preparation_rooms": n_prep[ex[3]],
-            "n_recovery_rooms": n_rec[ex[4]],
-            "cancelling_prob": settings.CANCELLING_PROBABILITY
-        }
-        samples = main.run_experiment(config, 1, True, random_seeds)
-        sample = samples[0]
-        queue_length = sample["mean_queue_at_entrance"]
-        y[i] = queue_length
+    return configs, X
+
+def getConfigs2():
+    """
+    Manually chosen
+    """
+    designMatrix = [
+        [1,0,1,0,1,0],
+        [1,0,1,0,0,1],
+        [1,0,0,1,1,0],
+        [1,0,0,1,0,1],
+        [0,1,0,1,0,1],
+        [0,1,0,1,1,0],
+        [0,1,1,0,0,1],
+        [0,1,1,0,1,0],
+    ]
+    X = np.array(designMatrix)
+    x1x2 = X[:,0] * X[:,1]
+    n,d = X.shape
+    Xn = np.zeros((n,d+1))
+    Xn[:,0:d] = X
+    Xn[:,d] = x1x2
+
+    configs = []
+    for ex in designMatrix:
+        config = getMapping(ex)
+        configs.append(config)
+
+    return configs, Xn
+
+
+
+def experiment():
+    random_seeds = [*range(settings.N_SAMPLES)]
+    configs, X = getConfigs2()
+    
+    y = []
+    for config in configs:
+        samples = main.run_experiment(config, settings.N_SAMPLES, True, random_seeds)
+        queue_length = (1 / len(samples)) * sum([sample["mean_queue_at_entrance"] for sample in samples])
+        y.append(queue_length)
         
+    y = np.array(y)
+
     model = RegressionModel()
-    model.fit(X, y, verbose = True)
+    model.fit(X, y, verbose = False)
+    print("beta", model.beta)
     print("mse", model.mse(X,y))
     print("r^2", model.r2(X,y))
+    print("crossvalidation error", RegressionModel.crossValidate(X,y))
 
+    prediction = model.predict([[0,0, 0,0,1,1]])
+    config_for_test = {
+        "interarrival_time_random_stream": exp(25),
+        "preparation_time_random_stream": exp(40),
+        "recovery_time_random_stream": exp(40),
+        "n_preparation_rooms": 5,
+        "n_recovery_rooms": 5,
+        "cancelling_prob": settings.CANCELLING_PROBABILITY
+    }
+    samples = main.run_experiment(config, settings.N_SAMPLES, True, random_seeds)
+    queue_length = (1 / len(samples)) * sum([sample["mean_queue_at_entrance"] for sample in samples])
+    print("prediction", prediction)
+    print("simulated", queue_length)
 
 if __name__ == "__main__":
     experiment()

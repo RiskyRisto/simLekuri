@@ -40,6 +40,12 @@ class Patient:
         self.time_recovery_start = None
         self.end_time = None
         self.finished = False
+
+        if self.env.now > settings.WARM_UP_TIME:
+            self.warmup = False
+        else:
+            self.warmup = True
+            
         self.process = env.process(self.preparation())
 
         
@@ -88,6 +94,7 @@ class Patient:
         if self.env.now > settings.WARM_UP_TIME:
             self.hospital.time_operation_theatre_blocked += (self.time_recovery_start - self.time_operation_done) 
         #print("Time spent in process: %6.3f" % (self.end_time - self.start_time))
+
 
     def __str__(self):
         """
