@@ -62,6 +62,7 @@ class Hospital:
 
     def entrance_queue_ac(self):
         while True:
-            self.queues_at_entrance.append(len(self.preparation.queue))
+            if self.env.now > settings.WARM_UP_TIME:
+                self.queues_at_entrance.append(len(self.preparation.queue))
             yield self.env.timeout(10)
         

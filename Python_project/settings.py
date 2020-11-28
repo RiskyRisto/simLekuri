@@ -38,7 +38,7 @@ CONFIGURATIONS = [
         "n_recovery_rooms": 4,
         "cancelling_prob": CANCELLING_PROBABILITY,
         "preparation_time_random_stream": exp(40),
-        "recovery_time_random_stream": unif(30,50),
+        "recovery_time_random_stream": exp(40),
         "interarrival_time_random_stream": exp(25)
     },
     {
