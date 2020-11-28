@@ -32,7 +32,7 @@ class Hospital:
         #self.recovery = simpy.Resource(env, N_RECOVERY_ROOMS)
         self.recovery = simpy.Resource(env, n_rec)
         self.time_operation_theatre_blocked = 0
-        self.total_queue_at_entrance = 0
+        self.queues_at_entrance = []
         self.total_time_operating = 0
         self.cancelling_prob = cancelling_prob
 
@@ -44,7 +44,7 @@ class Hospital:
         self.interarrivaltime_stream = inter_s
 
         self.process = self.env.process(self.run())
-
+        env.process(self.entrance_queue_ac())
     
     def run(self):
         while True:
@@ -59,4 +59,10 @@ class Hospital:
         recovery_time = self.recovery_time_stream()
         patient = Patient(self.env, self, preparation_time, operation_time, recovery_time)
         self.patients.append(patient)
+
+    def entrance_queue_ac(self):
+        while True:
+            if self.env.now > settings.WARM_UP_TIME:
+                self.queues_at_entrance.append(len(self.preparation.queue))
+            yield self.env.timeout(10)
         

@@ -7,6 +7,8 @@ Created on Tue Nov 10 12:07:49 2020
 
 import simpy
 import random
+import numpy
+from statsmodels.tsa import stattools
 import settings
 import statistics
 from Hospital import Hospital
@@ -20,14 +22,15 @@ def get_data(hospital):
     #TODO: tarkista että mitä warm upin aikana potilaista kerätään
     patients_finished = list(filter(lambda p: p.finished, patients))
     n_finished = len(patients_finished)
-    n_patients = len(patients)
     mean_blocking_time = hospital.time_operation_theatre_blocked / n_finished
-    #mean_queue_at_entrance = hospital.total_queue_at_entrance / n_patients
-    mean_queue_at_entrance = hospital.total_queue_at_entrance / n_non_warm_up_patients
+    mean_queue_at_entrance = numpy.mean(hospital.queues_at_entrance)
     utilization_rate_of_operation_theatre = hospital.total_time_operating / settings.SIM_TIME
 
     total_throughput_time = sum([p.end_time - p.start_time for p in patients_finished])
-
+    
+    # Display the autocorrelation plot of entrance queue
+    
+    
     #patients_json = list(map(lambda x: x.to_dict(), patients))
 
     #"patients": patients_json,
@@ -35,7 +38,8 @@ def get_data(hospital):
         "mean_blocking_time": mean_blocking_time,
         "mean_queue_at_entrance": mean_queue_at_entrance,
         "utilization_rate_of_operation_theatre": utilization_rate_of_operation_theatre,
-        "total_throughput_time": total_throughput_time
+        "total_throughput_time": total_throughput_time,
+        "entrance_queue_timeseries": hospital.queues_at_entrance
     }
 
 def run_experiment(config, n_samples, independence, random_seeds):
@@ -95,6 +99,10 @@ def run_simulation(independence):
 if __name__ == "__main__":
     #random.seed(settings.RANDOM_SEED)
     random_seeds = [*range(settings.N_SAMPLES)]
+
+    print("AUTOCORRELATION ANALYSIS")
+    samples = run_experiment(settings.CONFIGURATIONS[0], 10, True, None)
+    statistics.acf_plots(samples)
 
     print("SIMULATION FOR INDEPENDENT SAMPLES")
     print("-"*40)

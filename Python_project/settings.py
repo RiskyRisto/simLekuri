@@ -26,7 +26,7 @@ SEVERE_PATIENT_PROBABILITY = 0.3
 CANCELLING_PROBABILITY = 0.1
 #WEEKS = 12             # Simulation time in weeks
 #SIM_TIME = WEEKS * 7 * 24 * 60  # Simulation time in minutes
-SIM_TIME = 1000
+SIM_TIME = 5000
 WARM_UP_TIME = 1000
 N_SAMPLES = 20
 RANDOM_SEEDS = [*range(N_SAMPLES)]
@@ -38,7 +38,7 @@ CONFIGURATIONS = [
         "n_recovery_rooms": 4,
         "cancelling_prob": CANCELLING_PROBABILITY,
         "preparation_time_random_stream": exp(40),
-        "recovery_time_random_stream": unif(30,50),
+        "recovery_time_random_stream": exp(40),
         "interarrival_time_random_stream": exp(25)
     },
     {

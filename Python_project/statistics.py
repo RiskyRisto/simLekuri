@@ -6,6 +6,8 @@ Created on Tue Nov 22 12:29:49 2020
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.graphics import tsaplots
 
 def calculate_and_print_statistics(data):
     blocking_times = []
@@ -67,4 +69,27 @@ def calculate_95_ci(data):
     lower_limit = sorted(data)[lower_index - 1]
     upper_limit = sorted(data)[upper_index - 1]
     return([lower_limit, upper_limit])
+
+def acf_plots(data):
+    n_rows = int(len(data)/3)
+    if n_rows < 0:
+        n_rows = 1
+    n_cols = int(len(data)/n_rows)
+    if n_rows*n_cols < len(data):
+        n_cols += 1
+    plt.figure(figsize = (16,8))
+    plt.suptitle('Autocorrelations and 95% confidence intervals of no autocorrelation', fontsize=12)
+    for i in range(len(data)):
+        plt.subplot(n_rows, n_cols, i + 1)
+        acf,confint = tsaplots.acf(data[i]["entrance_queue_timeseries"], nlags=100, alpha=0.05,fft=False)
+        plt.plot(range(0, 101), acf, 'ob')
+        plt.fill_between(range(0, 101), (confint[:,0] - acf), (confint[:,1] - acf), color='b', alpha=.1)
+        plt.title("Sample %i" % (i + 1))
+        plt.xlabel('Lag (1 = 10 time steps)')
+        plt.ylabel('Autocorrelation')
+        plt.ylim((-1.05,1.05))
+        plt.tight_layout()
+    plt.subplots_adjust(top=0.90)
+    plt.show()
+
     
