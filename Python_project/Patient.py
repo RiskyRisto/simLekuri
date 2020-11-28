@@ -41,7 +41,6 @@ class Patient:
         self.end_time = None
         self.finished = False
         self.process = env.process(self.preparation())
-
         
     def preparation(self):
         # start queing if there is no free preparation available
@@ -53,8 +52,8 @@ class Patient:
             self.hospital.preparation.release(preparation_request)
         else:
             # for calculating average queue at entrance. Doesn't collect data in warm up period.
-            if self.env.now > settings.WARM_UP_TIME:
-                self.hospital.total_queue_at_entrance += len(self.hospital.preparation.queue) 
+            #if self.env.now > settings.WARM_UP_TIME:
+                #self.hospital.queues_at_entrance.append(len(self.hospital.preparation.queue))
             yield self.env.timeout(self.preparation_time)
             # free the preparation room
             self.process = self.env.process(self.operation(preparation_request)) 
