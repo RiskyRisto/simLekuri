@@ -8,18 +8,15 @@ Created on Tue Nov 10 12:07:49 2020
 import simpy
 import random
 import numpy
-from statsmodels.tsa import stattools
 import settings
 import statistics
 from Hospital import Hospital
 import json
-
+import regression
 
 
 def get_data(hospital):
     patients = hospital.patients
-    n_non_warm_up_patients = len(list(filter(lambda p: not p.warmup, patients)))
-    #TODO: tarkista että mitä warm upin aikana potilaista kerätään
     patients_finished = list(filter(lambda p: p.finished, patients))
     n_finished = len(patients_finished)
     mean_blocking_time = hospital.time_operation_theatre_blocked / n_finished
@@ -110,3 +107,5 @@ if __name__ == "__main__":
     print("SIMULATION FOR DEPENDENT SAMPLES")
     print("-"*40)
     run_simulation(False)
+
+    regression.experiment()
