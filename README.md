@@ -37,8 +37,10 @@ https://www.python.org/downloads/
 `git clone https://github.com/RiskyRisto/simLekuri.git`
 
 2. Install libraries 
-  * install simpy using instruction at https://simpy.readthedocs.io/en/latest/simpy_intro/installation.html
-  * install numpy using instruction at https://numpy.org/install/
+  * simpy https://simpy.readthedocs.io/en/latest/simpy_intro/installation.html
+  * numpy https://numpy.org/install/
+  * sklearn https://scikit-learn.org/stable/install.html
+  * statsmodels https://www.statsmodels.org/stable/install.html
 
 3. run python script \
 `python main.py`
