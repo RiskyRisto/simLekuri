@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn import linear_model
 from sklearn.metrics import explained_variance_score, mean_squared_error, r2_score
+from itertools import combinations
 
 import main
 import settings
@@ -59,86 +60,112 @@ def getConfigs():
 
     return configs, X
 
-def getConfigs2():
+def add2Joints(X, excludeColumns):
+    """
+    Add nonlinear combinations of variables
+    except for columns (i,j) in excludeColumns
+    """   
+    XT = X.T
+    Xextended = []
+    #add existing columns
+    for row in XT:
+        Xextended.append(row)
+
+    for i in range(len(XT)):
+        for j in range(i+1, len(XT)):
+            if (i,j) not in excludeColumns:
+                Xextended.append(XT[i] * XT[j])
+
+    return np.array(Xextended).T
+    
+
+def getConfigs2(add_joint):
     """
     Manually chosen
     """
-    designMatrix = [
-        [1,0,1,0,1,0],
-        [1,0,1,0,0,1],
-        [1,0,0,1,1,0],
-        [1,0,0,1,0,1],
-        [0,1,0,1,0,1],
-        [0,1,0,1,1,0],
-        [0,1,1,0,0,1],
-        [0,1,1,0,1,0],
-    ]
+    designMatrix = settings.DESIGN_MATRIX
     X = np.array(designMatrix)
-    """ x1x2 = X[:,0] * X[:,1]
-    n,d = X.shape
-    Xn = np.zeros((n,d+1))
-    Xn[:,0:d] = X
-    Xn[:,d] = x1x2 """
-
+    if add_joint:
+        X = add2Joints(X, settings.EXCLUDE_JOINTS)
     configs = []
+    def transform(x):
+        #-1 => 0, 1 => 1
+        if x == -1:
+            return 0
+        return 1
+
     for ex in designMatrix:
-        config = getMapping(ex)
+        ex_01 = list(map(transform, ex))
+        config = getMapping(ex_01)
         configs.append(config)
 
     return configs, X
 
 
 
-def experiment():
+def experiment(n_samples, add_joint, independent):
     """
     Run simulation and collect the simulated queue lengths
     fit linear regression model to simulation parameters and collected queue lengths
     predict for unseen example
     print information about the model
+    Params:
+        n_samples: int number of samples for each configurations
+        add_joint: boolean whether to add 2 joint effects
+        independent: boolean if true use same seed for each samples 
     """
-    random_seeds = [*range(settings.N_SAMPLES)]
-    configs, X = getConfigs2()
-    independent = True
+    random_seeds = [*range(n_samples)]
+    #configs, X = getConfigs()
+    configs, X = getConfigs2(add_joint)
 
-    N_samp = 10
-    X_obs = np.empty(shape = (N_samp*len(configs), len(X[0])))
-    y = np.array([])
+    #X_obs = np.empty(shape = (N_samp*len(configs), len(X[0])))
+    X_obs = []
+    y = []
     for i, config in enumerate(configs):
-        samples = main.run_experiment(config, N_samp, independent, random_seeds)
+        samples = main.run_experiment(config, n_samples, independent, random_seeds)
         for j, sample in enumerate(samples):
-            y = np.append(y, sample["mean_queue_at_entrance"])
-            X_obs[i*len(samples) + j] = X[i]
+            y.append(sample["mean_queue_at_entrance"])
+            X_obs.append(X[i])
+
         #queue_length = (1 / len(samples)) * sum([sample["mean_queue_at_entrance"] for sample in samples])
         #y.append(queue_length)
 
-    data = np.concatenate((X_obs, np.array([y]).T), axis=1)
-
+    X_obs = np.array(X_obs)
+    y = np.array(y)
+    data = np.concatenate((X_obs, y.reshape(-1,1)), axis=1)
     #save to file
     np.savetxt("experiment_data.csv", data, delimiter=",")
         
-    y = np.array(y)
     model = linear_model.LinearRegression(fit_intercept=True)
+    #model = linear_model.Ridge(alpha=1, fit_intercept=True)
     model.fit(X_obs, y)
-    
-    testX = [0,0,0,0,1,1]
-    prediction = model.predict([testX])
-    config_for_test = getMapping([0,0,0,0,1,1])
-    samples = main.run_experiment(config_for_test, N_samp, independent, random_seeds)
-    queue_length = (1 / len(samples)) * sum([sample["mean_queue_at_entrance"] for sample in samples])
 
+    #test model
+    testX = np.array([settings.REGRESSION_TEST_X])
+    if add_joint:
+        testX = add2Joints(testX,settings.EXCLUDE_JOINTS)
+    prediction = model.predict(testX)
+    config_for_test = getMapping(testX[0])
+    samples = main.run_experiment(config_for_test, n_samples, independent, random_seeds)
+    actual = (1 / len(samples)) * sum([sample["mean_queue_at_entrance"] for sample in samples])
+
+    printInformation(model, prediction, actual, X_obs, y)
+
+
+def printInformation(model, prediction, actual, X, y):
     formatting = "{} {:.3f}"
     print("-"*20)
     print("REGRESSION")
     print("-"*20)
-    with np.printoptions(precision=2):
+    with np.printoptions(precision=3):
         print("coefficients",model.coef_)
-        print("intercept",model.intercept_)
 
-    print(formatting.format("prediction", prediction[0]))
-    print(formatting.format("simulated", queue_length))
+    print(formatting.format("intercept",model.intercept_))
 
-    print(formatting.format("mean squared error", mean_squared_error(y, model.predict(X_obs))))
-    print(formatting.format("explained variance score", explained_variance_score(y, model.predict(X_obs))))
-    print(formatting.format("r^2 score", r2_score(y, model.predict(X_obs))))
+    print(formatting.format("predicted", prediction[0]))
+    print(formatting.format("simulated", actual))
+
+    print(formatting.format("mean squared error", mean_squared_error(y, model.predict(X))))
+    print(formatting.format("explained variance score", explained_variance_score(y, model.predict(X))))
+    print(formatting.format("r^2 score", r2_score(y, model.predict(X))))
     print("-"*20)
-
