@@ -1,0 +1,229 @@
+---
+title: "Assignment4"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(reticulate)
+```
+
+## Factors and levels
+By factor we refer to variable that can be independently varied during the series of experiments. The possible values of factors (within the experiment series) is called as level.
+
+- x1 = Arrival distribution (AD): Exp, Unif
+- x2 = Average arrival rate (AA): 25, 22.5
+- x3 = Preparation time (PT): exp(40) or Unif(30,50)
+- x4 = Recovery time (RT): exp(40) or Unif(30,50)
+- x5 = Preparation units: (PU) 4,5
+- x6 = Recovery units (RU): 4,5
+
+## Test design
+- "One factor at time" needs 7 experiments
+- "Full experiment" needs 64 experiments
+- We are aiming for 2^(6-3) = 8 experiments
+- 3-way and higher level joint effects are assumed to 0
+- 2-way joint effects that can be also  assumed to be ~0: x1x2, x3x4 x5x6
+With these settings test design matrix is following.
+
+```{python}
+designMatrix = [
+    [1,0,1,0,1,0],
+    [1,0,1,0,0,1],
+    [1,0,0,1,1,0],
+    [1,0,0,1,0,1],
+    [0,1,0,1,0,1],
+    [0,1,0,1,1,0],
+    [0,1,1,0,0,1],
+    [0,1,1,0,1,0],
+]
+    
+```
+
+This matrix were achieved by setting all discarded 2-way intereactions to -1 as demonstrated in lectures.
+
+- Initial regression model has a form:
+
+y ~ x1 + x2 + x3 + x4 +x5 +x6 +x1*x3 + x1*x4 + x1*x5 + x1*x6 + x2*x3 + x2*x4 +x2*x5 + x2*x6 + x3*x5 + x3*x6 + x4*x5 + x4*x6
+
+
+```{python sim_setup, include = FALSE}
+
+import simpy
+import random
+import numpy
+import settings
+import statistics
+from Hospital import Hospital
+import json
+import regression
+
+
+def get_data(hospital):
+    patients = hospital.patients
+    patients_finished = list(filter(lambda p: p.finished, patients))
+    n_finished = len(patients_finished)
+    mean_blocking_time = hospital.time_operation_theatre_blocked / n_finished
+    mean_queue_at_entrance = numpy.mean(hospital.queues_at_entrance)
+    utilization_rate_of_operation_theatre = hospital.total_time_operating / settings.SIM_TIME
+
+    total_throughput_time = sum([p.end_time - p.start_time for p in patients_finished])
+    
+    # Display the autocorrelation plot of entrance queue
+    
+    
+    #patients_json = list(map(lambda x: x.to_dict(), patients))
+
+    #"patients": patients_json,
+    return {
+        "mean_blocking_time": mean_blocking_time,
+        "mean_queue_at_entrance": mean_queue_at_entrance,
+        "utilization_rate_of_operation_theatre": utilization_rate_of_operation_theatre,
+        "total_throughput_time": total_throughput_time,
+        "entrance_queue_timeseries": hospital.queues_at_entrance
+    }
+
+def run_experiment(config, n_samples, independence, random_seeds):
+    """
+    Run clinic simulation with one configuration n_samples times
+    each with their own random_seed if not independence  
+    Returns:
+        [dict()] data gathered from each of the samples
+    """
+    samples = []
+    for sample_i in range(n_samples):
+        if not independence:
+            random.seed(random_seeds[sample_i])
+        env = simpy.Environment()
+
+        n_prep = config["n_preparation_rooms"]
+        n_rec = config["n_recovery_rooms"]
+        prep_s = config["preparation_time_random_stream"]
+        rec_s = config["recovery_time_random_stream"]
+        inter_s = config["interarrival_time_random_stream"]
+        cancelling_prob = config["cancelling_prob"]
+        
+        hospital = Hospital(env, n_prep, n_rec, prep_s, rec_s, inter_s, cancelling_prob)
+
+        env.run(until=settings.WARM_UP_TIME + settings.SIM_TIME)
+        sample_data = get_data(hospital)
+        samples.append(sample_data)
+
+    return samples
+
+def run_simulation(independence):
+    #list(list(dict()))
+    data = []
+    if independence:
+        random.seed(42)
+
+    for config in settings.CONFIGURATIONS:
+        samples = run_experiment(config, settings.N_SAMPLES, independence, random_seeds)
+        data.append(samples)
+    statistics.calculate_and_print_statistics(data)
+
+    twist_test_data = []
+
+    # Test twisted version againt original version
+    print("RESULTS FOR TESTING TWIST")
+    print("-" * 20)
+    for config in settings.CONFIGURATIONS_FOR_TESTING_TWIST:
+        samples = run_experiment(config, settings.N_SAMPLES, independence, random_seeds)
+        twist_test_data.append(samples)
+    statistics.calculate_and_print_statistics(twist_test_data)
+
+    #save to file
+    #with open("data.json", mode="w", encoding="utf-8") as f:
+    #    json.dump(data, f, indent=4)
+
+
+```
+
+## Test serial correlation
+
+Autocorrelation analysis is made by plotting 10 independent samples autocorrelations of entrance queue lengths. Based on plots one can see that queues are autocorrelated at least 250 time steps (see when autocorrelations cross the 95 % confidence interval of no autocorrelation). If samples for regression analysis were made from one patient stream, the time interval between collecting samples should be at least 250 times steps.
+
+Python codes for the analysis is located:
+
+https://github.com/RiskyRisto/simLekuri/tree/main/Python_project
+
+
+```{python acf}
+random_seeds = [*range(settings.N_SAMPLES)]
+print("AUTOCORRELATION ANALYSIS")
+samples = run_experiment(settings.CONFIGURATIONS[0], 10, True, None)
+statistics.acf_plots(samples)
+```
+
+## Regression model
+
+Build a regression model for the average queue length. 
+For each configuration multiple simulations were conducted and linear regression model was fitted using resulting "(n_samples * 8) rows, 6 columns" matrix and respective queue times. Number of replications, n_samples, were set to 10.
+
+Newt we simulate the data and run an initial regression model. Python code is located:
+
+https://github.com/RiskyRisto/simLekuri/tree/main/Python_project
+
+```{python simulations, results = FALSE}
+print("SIMULATION FOR INDEPENDENT SAMPLES")
+#print("-"*40)
+run_simulation(True)
+print("SIMULATION FOR DEPENDENT SAMPLES")
+#print("-"*40)
+run_simulation(False)
+regression.experiment()
+```
+
+```{python init_regression}
+regression.experiment()
+```
+
+## Further analysis with R
+
+- There are perfect dependecies within x variables causing singularities
+- Parameters x2, x4 and x6 had to be dropped out of model because of singularity issues.
+- Model to fit is: y ~ b0 + b1*x1 + b2*x3 + b3*x5 + b4*x1:x3 + b5*x1:x5 + b6*x3:x5 + eps
+- Statistically significant  b1, coefficient which corresponds to the arrival distribution.
+- Statistically significant  b5, coefficient which corresponds to the preparation rooms.
+- Other coefficients are not statistically significant.
+
+Correlation matrix of the variables:
+
+```{r data_cor}
+
+dat <- read.csv("experiment_data.csv", header = FALSE)
+names(dat) <- c("x1", "x2", "x3", "x4", "x5", "x6", "y")
+print(round(cor(dat),2))
+```
+
+```{r regr}
+
+# Set x-varibles as factors
+dat$x1 <- factor(dat$x1)
+dat$x2 <- factor(dat$x2)
+dat$x3 <- factor(dat$x3)
+dat$x4 <- factor(dat$x4)
+dat$x5 <- factor(dat$x5)
+dat$x6 <- factor(dat$x6)
+
+# Full model not defined because of singularities
+fit <- lm(y ~ x1 + x3 + x5 + x1*x3 + x1*x5 + x3*x5, data = dat)
+
+print(summary(fit))
+
+# 95% confidence intervals for the coefficients
+print(confint(fit))
+```
+
+### Conclusions
+When arrival distribution is uniform distribution, estimate for mean entrance queue length is -2.08 lower than when distribution is exponential. b5 corresponds to preparation rooms, when there are 5 rooms instead of 4 rooms, the estimated mean entrance queue length is -1.10 lower. This result makes sense.
+
+
+### Discussion
+
+It seems that selecting design matrix, as demonstrated in lectures with 3-way joint effect, is not working with 2-way joint effects because it causes perfect dependence between variables. 
+
+If we would take samples for every configuration, there would not be singularity issues and results would be much more reliable and better.
+
