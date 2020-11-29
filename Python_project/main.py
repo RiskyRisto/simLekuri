@@ -107,4 +107,4 @@ if __name__ == "__main__":
     print("-"*40)
     run_simulation(False)
 
-    regression.experiment(10, True, False)
+    regression.experiment(10, False, True)
