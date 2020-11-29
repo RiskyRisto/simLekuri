@@ -29,7 +29,6 @@ def get_data(hospital):
     
     
     #patients_json = list(map(lambda x: x.to_dict(), patients))
-
     #"patients": patients_json,
     return {
         "mean_blocking_time": mean_blocking_time,
@@ -108,4 +107,4 @@ if __name__ == "__main__":
     print("-"*40)
     run_simulation(False)
 
-    regression.experiment()
+    regression.experiment(10, False, False)

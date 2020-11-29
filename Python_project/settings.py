@@ -76,3 +76,18 @@ CONFIGURATIONS_FOR_TESTING_TWIST = [
         "interarrival_time_random_stream": unif(20,25)
     }
 ]
+
+DESIGN_MATRIX = [
+    [1,-1,1,-1,1,-1],
+    [1,-1,1,-1,-1,1],
+    [1,-1,-1,1,1,-1],
+    [1,-1,-1,1,-1,1],
+    [-1,1,-1,1,-1,1],
+    [-1,1,-1,1,1,-1],
+    [-1,1,1,-1,-1,1],
+    [-1,1,1,-1,1,-1],
+]
+EXCLUDE_JOINTS = [(0,1),(2,3),(4,5)]
+#EXCLUDE_JOINTS = []
+
+REGRESSION_TEST_X = [-1,-1,-1,-1,1,1]
