@@ -100,16 +100,25 @@ def experiment():
     configs, X = getConfigs2()
     independent = True
 
-    N_samp = 4
-    y = []
-    for config in configs:
+    N_samp = 10
+    X_obs = np.empty(shape = (N_samp*len(configs), len(X[0])))
+    y = np.array([])
+    for i, config in enumerate(configs):
         samples = main.run_experiment(config, N_samp, independent, random_seeds)
-        queue_length = (1 / len(samples)) * sum([sample["mean_queue_at_entrance"] for sample in samples])
-        y.append(queue_length)
+        for j, sample in enumerate(samples):
+            y = np.append(y, sample["mean_queue_at_entrance"])
+            X_obs[i*len(samples) + j] = X[i]
+        #queue_length = (1 / len(samples)) * sum([sample["mean_queue_at_entrance"] for sample in samples])
+        #y.append(queue_length)
+
+    data = np.concatenate((X_obs, np.array([y]).T), axis=1)
+
+    #save to file
+    np.savetxt("experiment_data.csv", data, delimiter=",")
         
     y = np.array(y)
-    model = linear_model.Ridge(alpha=1, fit_intercept=True)
-    model.fit(X, y)
+    model = linear_model.LinearRegression(fit_intercept=True)
+    model.fit(X_obs, y)
     
     testX = [0,0,0,0,1,1]
     prediction = model.predict([testX])
@@ -128,8 +137,8 @@ def experiment():
     print(formatting.format("prediction", prediction[0]))
     print(formatting.format("simulated", queue_length))
 
-    print(formatting.format("mean squared error", mean_squared_error(y, model.predict(X))))
-    print(formatting.format("explained variance score", explained_variance_score(y, model.predict(X))))
-    print(formatting.format("r^2 score", r2_score(y, model.predict(X))))
+    print(formatting.format("mean squared error", mean_squared_error(y, model.predict(X_obs))))
+    print(formatting.format("explained variance score", explained_variance_score(y, model.predict(X_obs))))
+    print(formatting.format("r^2 score", r2_score(y, model.predict(X_obs))))
     print("-"*20)
 
