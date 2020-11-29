@@ -71,9 +71,10 @@ def add2Joints(X, excludeColumns):
     for row in XT:
         Xextended.append(row)
 
-    for xi,xj in combinations(XT, 2):
-        if (xi,xj) not in excludeColumns:
-            Xextended.append(xi * xj)
+    for i in range(len(XT)):
+        for j in range(i+1, len(XT)):
+            if (i,j) not in excludeColumns:
+                Xextended.append(XT[i] * XT[j])
 
     return np.array(Xextended).T
     
